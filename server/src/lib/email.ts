@@ -1,16 +1,16 @@
 import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
 
-dotenv.config();
-
-// Create reusable transporter
+// Create reusable transporter with explicit Gmail configuration
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: process.env.SMTP_SECURE === 'true',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // Use TLS
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
+    user: process.env.SMTP_USER || 'juusojuusto112@gmail.com',
+    pass: process.env.SMTP_PASS || 'zwlcbmlrxsrkutme'
+  },
+  tls: {
+    rejectUnauthorized: false
   }
 });
 
@@ -18,9 +18,14 @@ const transporter = nodemailer.createTransport({
 transporter.verify((error: any, success: any) => {
   if (error) {
     console.log('⚠️ SMTP connection error:', error.message);
-    console.log('Email features will be limited. Configure SMTP in .env file.');
+    console.log('📧 SMTP Config:', {
+      host: 'smtp.gmail.com',
+      port: 587,
+      user: process.env.SMTP_USER || 'juusojuusto112@gmail.com'
+    });
   } else {
     console.log('✅ SMTP server ready to send emails');
+    console.log('📧 Using:', process.env.SMTP_USER || 'juusojuusto112@gmail.com');
   }
 });
 
@@ -33,8 +38,11 @@ interface EmailOptions {
 
 export const sendEmail = async (options: EmailOptions) => {
   try {
+    const fromName = process.env.SMTP_FROM_NAME || 'EchoChat';
+    const fromEmail = process.env.SMTP_FROM_EMAIL || 'juusojuusto112@gmail.com';
+    
     const info = await transporter.sendMail({
-      from: `"${process.env.SMTP_FROM_NAME || 'EchoChat'}" <${process.env.SMTP_FROM_EMAIL}>`,
+      from: `"${fromName}" <${fromEmail}>`,
       to: options.to,
       subject: options.subject,
       html: options.html,
@@ -42,9 +50,11 @@ export const sendEmail = async (options: EmailOptions) => {
     });
 
     console.log('✅ Email sent:', info.messageId);
+    console.log('📧 To:', options.to);
     return { success: true, messageId: info.messageId };
   } catch (error: any) {
     console.error('❌ Email send error:', error.message);
+    console.error('📧 Full error:', error);
     return { success: false, error: error.message };
   }
 };

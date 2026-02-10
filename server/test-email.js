@@ -6,22 +6,25 @@ dotenv.config();
 
 console.log('🧪 Testing SMTP Email Configuration...\n');
 
-// Create transporter
+// Create transporter with explicit Gmail configuration
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: process.env.SMTP_SECURE === 'true',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // Use TLS
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
+    user: process.env.SMTP_USER || 'juusojuusto112@gmail.com',
+    pass: process.env.SMTP_PASS || 'zwlcbmlrxsrkutme'
+  },
+  tls: {
+    rejectUnauthorized: false
   }
 });
 
 console.log('📧 SMTP Configuration:');
-console.log(`   Host: ${process.env.SMTP_HOST}`);
-console.log(`   Port: ${process.env.SMTP_PORT}`);
-console.log(`   User: ${process.env.SMTP_USER}`);
-console.log(`   From: ${process.env.SMTP_FROM_EMAIL}\n`);
+console.log(`   Host: smtp.gmail.com`);
+console.log(`   Port: 587`);
+console.log(`   User: ${process.env.SMTP_USER || 'juusojuusto112@gmail.com'}`);
+console.log(`   From: ${process.env.SMTP_FROM_EMAIL || 'juusojuusto112@gmail.com'}\n`);
 
 // Test connection
 console.log('🔌 Testing SMTP connection...');
@@ -42,9 +45,9 @@ transporter.verify((error, success) => {
     console.log('📨 Sending test email...');
     
     const testEmail = {
-      from: `"${process.env.SMTP_FROM_NAME || 'Discord Alternative'}" <${process.env.SMTP_FROM_EMAIL}>`,
-      to: process.env.SMTP_USER, // Send to yourself
-      subject: '🎉 Test Email from Discord Alternative',
+      from: `"${process.env.SMTP_FROM_NAME || 'EchoChat'}" <${process.env.SMTP_FROM_EMAIL || 'juusojuusto112@gmail.com'}>`,
+      to: process.env.SMTP_USER || 'juusojuusto112@gmail.com', // Send to yourself
+      subject: '🎉 Test Email from EchoChat',
       html: `
         <!DOCTYPE html>
         <html>
@@ -67,7 +70,7 @@ transporter.verify((error, success) => {
               <div class="success">
                 <strong>✅ Your email system is working perfectly!</strong>
               </div>
-              <p>Congratulations! Your Discord Alternative can now send custom emails.</p>
+              <p>Congratulations! Your EchoChat can now send custom emails.</p>
               <p><strong>What's working:</strong></p>
               <ul>
                 <li>✅ SMTP connection established</li>
@@ -75,7 +78,7 @@ transporter.verify((error, success) => {
                 <li>✅ Email templates rendering correctly</li>
                 <li>✅ Ready to send welcome emails, 2FA codes, and more!</li>
               </ul>
-              <p>This test email was sent from your Discord Alternative server at ${new Date().toLocaleString()}.</p>
+              <p>This test email was sent from your EchoChat server at ${new Date().toLocaleString()}.</p>
               <p><strong>Next steps:</strong></p>
               <ol>
                 <li>Register a new user to test welcome emails</li>
@@ -84,7 +87,7 @@ transporter.verify((error, success) => {
               </ol>
             </div>
             <div class="footer">
-              <p>© 2024 Discord Alternative. All rights reserved.</p>
+              <p>© 2024 EchoChat. All rights reserved.</p>
               <p>This is a test email from your SMTP configuration.</p>
             </div>
           </div>
@@ -101,7 +104,7 @@ transporter.verify((error, success) => {
       } else {
         console.log('✅ Test email sent successfully!');
         console.log(`   Message ID: ${info.messageId}`);
-        console.log(`   Sent to: ${process.env.SMTP_USER}\n`);
+        console.log(`   Sent to: ${process.env.SMTP_USER || 'juusojuusto112@gmail.com'}\n`);
         console.log('🎉 All tests passed! Your SMTP is configured correctly.');
         console.log('📬 Check your inbox (and spam folder) for the test email.\n');
         process.exit(0);
