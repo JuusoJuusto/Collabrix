@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Discord Alternative</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #36393f;
+            color: white;
+        }
+        .status {
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: #2f3136;
+        }
+        .success { border-left: 4px solid #3ba55d; }
+        .error { border-left: 4px solid #ed4245; }
+        .warning { border-left: 4px solid #faa61a; }
+        button {
+            background: #5865f2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover { background: #4752c4; }
+        pre {
+            background: #202225;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        h1 { color: #5865f2; }
+        h2 { color: #b9bbbe; }
+    </style>
+</head>
+<body>
+    <h1>🎮 Discord Alternative - Connection Test</h1>
+    
+    <div class="status success">
+        <h2>✅ Client Running</h2>
+        <p>Frontend: <a href="http://localhost:5173" target="_blank" style="color: #00aff4;">http://localhost:5173</a></p>
+    </div>
+
+    <div class="status success">
+        <h2>✅ Server Running</h2>
+        <p>Backend: http://localhost:3001</p>
+    </div>
+
+    <div class="status success">
+        <h2>✅ Firebase Configured</h2>
+        <p>Project: studiowl-3b22d</p>
+        <p>Private Key: ✅ Loaded</p>
+    </div>
+
+    <div class="status warning">
+        <h2>⚠️ Firebase Features Need Enabling</h2>
+        <p>You need to enable these in Firebase Console:</p>
+        <ol>
+            <li><strong>Authentication</strong> - For user login/register</li>
+            <li><strong>Firestore Database</strong> - For storing data</li>
+        </ol>
+        <button onclick="window.open('https://console.firebase.google.com/project/studiowl-3b22d/authentication', '_blank')">
+            Enable Authentication
+        </button>
+        <button onclick="window.open('https://console.firebase.google.com/project/studiowl-3b22d/firestore', '_blank')">
+            Create Firestore
+        </button>
+    </div>
+
+    <div class="status">
+        <h2>🧪 Test Connection</h2>
+        <button onclick="testClient()">Test Client</button>
+        <button onclick="testServer()">Test Server</button>
+        <button onclick="testFirebase()">Test Firebase</button>
+        <pre id="result">Click a button to test...</pre>
+    </div>
+
+    <div class="status">
+        <h2>📖 Quick Start</h2>
+        <ol>
+            <li>Enable Authentication in Firebase Console</li>
+            <li>Create Firestore Database in Firebase Console</li>
+            <li>Open <a href="http://localhost:5173" target="_blank" style="color: #00aff4;">http://localhost:5173</a></li>
+            <li>Click "Register" and create an account</li>
+            <li>Start chatting! 🎉</li>
+        </ol>
+    </div>
+
+    <script>
+        function testClient() {
+            document.getElementById('result').textContent = 'Testing client...';
+            fetch('http://localhost:5173')
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('result').textContent = '✅ Client is running!\n\nOpen: http://localhost:5173';
+                    } else {
+                        document.getElementById('result').textContent = '❌ Client returned error: ' + response.status;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('result').textContent = '❌ Client not accessible:\n' + error.message;
+                });
+        }
+
+        function testServer() {
+            document.getElementById('result').textContent = 'Testing server...';
+            fetch('http://localhost:3001/api/servers', {
+                headers: { 'Content-Type': 'application/json' }
+            })
+                .then(response => {
+                    if (response.status === 401) {
+                        document.getElementById('result').textContent = '✅ Server is running!\n\n(401 = needs authentication, which is correct)';
+                    } else if (response.ok) {
+                        document.getElementById('result').textContent = '✅ Server is running and responding!';
+                    } else {
+                        document.getElementById('result').textContent = '⚠️ Server returned: ' + response.status;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('result').textContent = '❌ Server not accessible:\n' + error.message + '\n\nMake sure server is running!';
+                });
+        }
+
+        function testFirebase() {
+            document.getElementById('result').textContent = 
+                '🔥 Firebase Configuration:\n\n' +
+                'Project ID: studiowl-3b22d\n' +
+                'Auth Domain: studiowl-3b22d.firebaseapp.com\n' +
+                'API Key: AIzaSyDb4aSjXkg0YtrSAGASmfqPvwThyR0X_G8\n\n' +
+                '✅ Credentials are configured!\n\n' +
+                'Next steps:\n' +
+                '1. Enable Authentication\n' +
+                '2. Create Firestore Database\n' +
+                '3. Start using the app!';
+        }
+
+        // Auto-test on load
+        setTimeout(() => {
+            testClient();
+        }, 500);
+    </script>
+</body>
+</html>

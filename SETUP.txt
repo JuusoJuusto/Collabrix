@@ -1,0 +1,251 @@
+═══════════════════════════════════════════════════════════════════
+                    🚀 ECHOCHAT SETUP GUIDE
+═══════════════════════════════════════════════════════════════════
+
+📋 STEP 1: ENABLE FIREBASE AUTHENTICATION
+═══════════════════════════════════════════════════════════════════
+
+1. Go to Firebase Console:
+   https://console.firebase.google.com/project/studiowl-3b22d/authentication
+
+2. Click "Get started" button
+
+3. Enable "Email/Password":
+   - Click "Email/Password"
+   - Toggle ON the first switch (Email/Password)
+   - Click "Save"
+
+4. Enable "Google" Sign-In:
+   - Click "Google" in the sign-in providers list
+   - Toggle ON the switch
+   - Set "Project support email" to: juusojuusto112@gmail.com
+   - Click "Save"
+
+5. (Optional) Enable "Apple" Sign-In:
+   - Requires Apple Developer account ($99/year)
+   - Click "Apple"
+   - Follow the setup instructions
+
+
+═══════════════════════════════════════════════════════════════════
+📋 STEP 2: CREATE FIRESTORE DATABASE
+═══════════════════════════════════════════════════════════════════
+
+1. Go to Firestore:
+   https://console.firebase.google.com/project/studiowl-3b22d/firestore
+
+2. Click "Create database"
+
+3. Select "Start in test mode" (IMPORTANT!)
+   - This allows all read/write operations for development
+   - You can switch to production mode later
+
+4. Choose your region:
+   - Select the closest region to you
+   - Recommended: europe-west1 (Belgium) for Europe
+   - Or: us-central1 for USA
+
+5. Click "Enable"
+
+6. Wait 30-60 seconds for database creation
+
+
+═══════════════════════════════════════════════════════════════════
+📋 STEP 3: CUSTOMIZE FIREBASE EMAIL TEMPLATES (OPTIONAL)
+═══════════════════════════════════════════════════════════════════
+
+1. Go to Email Templates:
+   https://console.firebase.google.com/project/studiowl-3b22d/authentication/emails
+
+2. Customize "Email verification" template:
+   - Click "Email verification" (pencil icon)
+   - Change "Sender name" to: EchoChat
+   - Customize subject: "Verify your email for EchoChat"
+   - Edit body text (use %LINK% for verification link)
+   - Click "Save"
+
+3. Customize "Password reset" template:
+   - Click "Password reset" (pencil icon)
+   - Change "Sender name" to: EchoChat
+   - Customize subject: "Reset your EchoChat password"
+   - Edit body text (use %LINK% for reset link)
+   - Click "Save"
+
+4. Set "From" email (IMPORTANT!):
+   - In the email templates page
+   - Look for "Customize email address"
+   - Set to: juusojuusto112@gmail.com
+   - Or use: noreply@studiowl-3b22d.firebaseapp.com (default)
+
+
+═══════════════════════════════════════════════════════════════════
+🧪 STEP 4: TEST THE APP
+═══════════════════════════════════════════════════════════════════
+
+1. Make sure both servers are running:
+   - Client: http://localhost:5173
+   - Server: http://localhost:3001
+
+2. Test Registration:
+   - Go to http://localhost:5173
+   - Click "Register"
+   - Fill in ALL fields:
+     * Email: your-real-email@gmail.com
+     * Username: cooluser123
+     * Display Name: Cool User
+     * Country: Select your country
+     * Phone: Your phone number (country code auto-fills)
+     * Birthday: Your birthday (must be 13+)
+     * Language: Select your language
+     * Location: Your city (optional)
+     * Password: At least 8 characters
+   - Click "Register"
+
+3. Check Your Email (2 emails):
+   ✅ Firebase verification email (from Firebase)
+   ✅ Custom welcome email (from juusojuusto112@gmail.com)
+
+4. Verify Your Email:
+   - Open the Firebase verification email
+   - Click the verification link
+   - You'll be redirected to Firebase
+
+5. Login:
+   - Go back to http://localhost:5173/login
+   - Login with:
+     * Email: your-email@gmail.com
+     * OR Username: cooluser123
+     * OR Phone: +1234567890
+   - Enter your password
+   - Click "Login"
+
+6. Test Google Sign-In:
+   - Click "Google" button
+   - Select your Google account
+   - Automatically logged in!
+
+
+═══════════════════════════════════════════════════════════════════
+📧 FIREBASE EMAIL SETTINGS EXPLAINED
+═══════════════════════════════════════════════════════════════════
+
+Q: What email should I use for "From" in Firebase?
+A: You have 2 options:
+
+   Option 1: Use Firebase default (RECOMMENDED for testing)
+   - Email: noreply@studiowl-3b22d.firebaseapp.com
+   - No setup needed
+   - Works immediately
+   - May go to spam folder
+
+   Option 2: Use your Gmail (BETTER for production)
+   - Email: juusojuusto112@gmail.com
+   - Requires verification in Firebase
+   - Better deliverability
+   - Won't go to spam
+
+Q: How do I set up custom "From" email?
+A: 
+   1. Go to: https://console.firebase.google.com/project/studiowl-3b22d/authentication/emails
+   2. Click "Customize email address"
+   3. Enter: juusojuusto112@gmail.com
+   4. Firebase will send verification email
+   5. Click the link in that email
+   6. Done! Firebase will now send from your email
+
+Q: What's the difference between Firebase emails and SMTP emails?
+A:
+   Firebase Emails (Automatic):
+   - Email verification on registration
+   - Password reset emails
+   - Sent by Firebase automatically
+   - Uses Firebase servers
+
+   SMTP Emails (Custom - Your Server):
+   - Welcome emails with custom design
+   - 2FA verification codes
+   - Server invitations
+   - Custom notifications
+   - Sent by your server using Gmail SMTP
+
+
+═══════════════════════════════════════════════════════════════════
+🐛 TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════
+
+Problem: "Email not verified" error when logging in
+Solution:
+  - Check your email inbox (and spam folder)
+  - Click the verification link from Firebase
+  - Try logging in again
+
+Problem: Google Sign-In not working
+Solution:
+  - Make sure you enabled Google in Firebase Console
+  - Set the support email to: juusojuusto112@gmail.com
+  - Clear browser cache and try again
+
+Problem: Not receiving emails
+Solution:
+  - Check spam folder
+  - Wait 2-3 minutes (email delivery can be slow)
+  - Make sure Email/Password auth is enabled in Firebase
+  - Check Firebase Console → Authentication → Templates
+
+Problem: "User not found" when logging with username/phone
+Solution:
+  - Make sure Firestore database is created
+  - Make sure you registered with that username/phone
+  - Try logging in with email instead
+
+Problem: Can't create servers or send messages
+Solution:
+  - Make sure Firestore is in "test mode"
+  - Check browser console for errors
+  - Make sure both client and server are running
+
+
+═══════════════════════════════════════════════════════════════════
+✅ CHECKLIST
+═══════════════════════════════════════════════════════════════════
+
+Firebase Setup:
+[ ] Email/Password authentication enabled
+[ ] Google Sign-In enabled
+[ ] Firestore database created (test mode)
+[ ] Email templates customized (optional)
+[ ] Custom "From" email set (optional)
+
+Testing:
+[ ] Registered a test account
+[ ] Received Firebase verification email
+[ ] Received custom welcome email
+[ ] Verified email address
+[ ] Logged in successfully
+[ ] Tested Google Sign-In
+[ ] Created a server
+[ ] Sent a message
+
+SMTP:
+[✓] SMTP configured (juusojuusto112@gmail.com)
+[✓] SMTP tested and working
+[✓] Welcome emails ready
+[✓] 2FA emails ready
+
+
+═══════════════════════════════════════════════════════════════════
+🚀 NEXT: DEPLOY TO VERCEL
+═══════════════════════════════════════════════════════════════════
+
+See DEPLOY.txt for Vercel deployment instructions.
+
+
+═══════════════════════════════════════════════════════════════════
+                    🎉 YOU'RE READY TO GO!
+═══════════════════════════════════════════════════════════════════
+
+Your EchoChat is fully configured and ready to use!
+
+Just complete the Firebase setup above and start chatting!
+
+Need help? Check the troubleshooting section above.
