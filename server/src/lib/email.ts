@@ -38,7 +38,7 @@ interface EmailOptions {
 
 export const sendEmail = async (options: EmailOptions) => {
   try {
-    const fromName = process.env.SMTP_FROM_NAME || 'EchoChat';
+    const fromName = process.env.SMTP_FROM_NAME || 'Collabrix';
     const fromEmail = process.env.SMTP_FROM_EMAIL || 'juusojuusto112@gmail.com';
     
     const info = await transporter.sendMail({
@@ -62,7 +62,7 @@ export const sendEmail = async (options: EmailOptions) => {
 // Email Templates
 export const emailTemplates = {
   welcome: (username: string, verificationLink: string) => ({
-    subject: '🎉 Welcome to EchoChat!',
+    subject: '🎉 Welcome to Collabrix!',
     html: `
       <!DOCTYPE html>
       <html>
@@ -71,26 +71,26 @@ export const emailTemplates = {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #202225; color: #dcddde; line-height: 1.6; }
-          .email-wrapper { background-color: #202225; padding: 40px 20px; }
-          .email-container { max-width: 600px; margin: 0 auto; background-color: #2f3136; border-radius: 8px; overflow: hidden; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
-          .header { background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%); padding: 40px 30px; text-align: center; }
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0f172a; color: #e2e8f0; line-height: 1.6; }
+          .email-wrapper { background-color: #0f172a; padding: 40px 20px; }
+          .email-container { max-width: 600px; margin: 0 auto; background-color: #1e293b; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+          .header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 40px 30px; text-align: center; }
           .header h1 { color: #ffffff; font-size: 32px; font-weight: 700; margin-bottom: 8px; }
-          .header p { color: #e3e5e8; font-size: 16px; }
+          .header p { color: #e0e7ff; font-size: 16px; }
           .content { padding: 40px 30px; }
           .greeting { font-size: 24px; font-weight: 600; color: #ffffff; margin-bottom: 20px; }
-          .message { color: #b9bbbe; font-size: 16px; margin-bottom: 20px; }
+          .message { color: #cbd5e1; font-size: 16px; margin-bottom: 20px; line-height: 1.8; }
           .button-container { text-align: center; margin: 30px 0; }
-          .button { display: inline-block; background-color: #5865f2; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 16px; transition: background-color 0.2s; }
-          .button:hover { background-color: #4752c4; }
-          .features { background-color: #202225; border-radius: 8px; padding: 24px; margin: 30px 0; }
+          .button { display: inline-block; background-color: #6366f1; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; transition: background-color 0.2s; }
+          .button:hover { background-color: #4f46e5; }
+          .features { background-color: #0f172a; border-radius: 8px; padding: 24px; margin: 30px 0; }
           .features h3 { color: #ffffff; font-size: 18px; margin-bottom: 16px; }
           .feature-list { list-style: none; }
-          .feature-list li { color: #b9bbbe; padding: 8px 0; padding-left: 28px; position: relative; }
-          .feature-list li:before { content: "✓"; position: absolute; left: 0; color: #3ba55d; font-weight: bold; font-size: 18px; }
-          .divider { height: 1px; background-color: #40444b; margin: 30px 0; }
-          .footer { background-color: #202225; padding: 30px; text-align: center; color: #72767d; font-size: 14px; }
-          .footer a { color: #00aff4; text-decoration: none; }
+          .feature-list li { color: #cbd5e1; padding: 8px 0; padding-left: 28px; position: relative; }
+          .feature-list li:before { content: "✓"; position: absolute; left: 0; color: #10b981; font-weight: bold; font-size: 18px; }
+          .divider { height: 1px; background-color: #334155; margin: 30px 0; }
+          .footer { background-color: #0f172a; padding: 30px; text-align: center; color: #64748b; font-size: 14px; }
+          .footer a { color: #6366f1; text-decoration: none; }
           @media only screen and (max-width: 600px) {
             .email-wrapper { padding: 20px 10px; }
             .header { padding: 30px 20px; }
@@ -104,19 +104,19 @@ export const emailTemplates = {
         <div class="email-wrapper">
           <div class="email-container">
             <div class="header">
-              <h1>💬 Welcome to EchoChat!</h1>
-              <p>Your voice, amplified</p>
+              <h1>💬 Welcome to Collabrix!</h1>
+              <p>Collaborate. Connect. Create.</p>
             </div>
             
             <div class="content">
               <div class="greeting">Hey ${username}! 👋</div>
               
               <p class="message">
-                We're thrilled to have you join EchoChat! You're now part of a vibrant community where conversations flow naturally, friendships form instantly, and every voice matters.
+                Welcome to Collabrix! You're now part of a modern collaboration platform where teams connect, communicate, and create together seamlessly.
               </p>
               
               <p class="message">
-                To get started, please verify your email address by clicking the button below:
+                To get started, please verify your email address:
               </p>
               
               <div class="button-container">
@@ -124,26 +124,26 @@ export const emailTemplates = {
               </div>
               
               <div class="features">
-                <h3>🚀 What you can do now:</h3>
+                <h3>🚀 What you can do:</h3>
                 <ul class="feature-list">
-                  <li>Create your own servers and invite friends</li>
-                  <li>Join existing communities and start chatting</li>
-                  <li>Customize your profile with avatar and bio</li>
-                  <li>Send direct messages to other users</li>
-                  <li>Set your status and let others know you're online</li>
-                  <li>Enjoy real-time messaging with lightning-fast delivery</li>
+                  <li>Create workspaces and invite your team</li>
+                  <li>Real-time messaging and collaboration</li>
+                  <li>Customize your profile and preferences</li>
+                  <li>Direct messaging with team members</li>
+                  <li>Multi-language support (18 languages)</li>
+                  <li>Secure and fast communication</li>
                 </ul>
               </div>
               
               <div class="divider"></div>
               
-              <p class="message" style="font-size: 14px; color: #72767d;">
-                <strong>🔒 Security tip:</strong> If you didn't create this account, you can safely ignore this email. Your security is our top priority.
+              <p class="message" style="font-size: 14px; color: #64748b;">
+                <strong>🔒 Security:</strong> If you didn't create this account, you can safely ignore this email.
               </p>
             </div>
             
             <div class="footer">
-              <p>© 2024 EchoChat. All rights reserved.</p>
+              <p>© 2024 Collabrix. All rights reserved.</p>
               <p style="margin-top: 10px;">This email was sent to <strong>${username}</strong></p>
             </div>
           </div>
@@ -154,7 +154,7 @@ export const emailTemplates = {
   }),
 
   twoFactorCode: (username: string, code: string) => ({
-    subject: '🔐 Your EchoChat Verification Code',
+    subject: '🔐 Your Collabrix Verification Code',
     html: `
       <!DOCTYPE html>
       <html>
@@ -163,17 +163,17 @@ export const emailTemplates = {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #202225; color: #dcddde; }
-          .email-wrapper { background-color: #202225; padding: 40px 20px; }
-          .email-container { max-width: 600px; margin: 0 auto; background-color: #2f3136; border-radius: 8px; overflow: hidden; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
-          .header { background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%); padding: 40px 30px; text-align: center; }
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0f172a; color: #e2e8f0; }
+          .email-wrapper { background-color: #0f172a; padding: 40px 20px; }
+          .email-container { max-width: 600px; margin: 0 auto; background-color: #1e293b; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+          .header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 40px 30px; text-align: center; }
           .header h1 { color: #ffffff; font-size: 28px; font-weight: 700; }
           .content { padding: 40px 30px; text-align: center; }
-          .code-box { background-color: #202225; border: 2px solid #5865f2; border-radius: 8px; padding: 30px; margin: 30px 0; }
-          .code { font-size: 48px; font-weight: 700; color: #5865f2; letter-spacing: 12px; font-family: 'Courier New', monospace; }
-          .warning { background-color: #ed4245; padding: 20px; border-radius: 8px; margin: 30px 0; }
+          .code-box { background-color: #0f172a; border: 2px solid #6366f1; border-radius: 12px; padding: 30px; margin: 30px 0; }
+          .code { font-size: 48px; font-weight: 700; color: #6366f1; letter-spacing: 12px; font-family: 'Courier New', monospace; }
+          .warning { background-color: #dc2626; padding: 20px; border-radius: 8px; margin: 30px 0; }
           .warning-title { color: #ffffff; font-weight: 600; margin-bottom: 8px; }
-          .footer { background-color: #202225; padding: 30px; text-align: center; color: #72767d; font-size: 14px; }
+          .footer { background-color: #0f172a; padding: 30px; text-align: center; color: #64748b; font-size: 14px; }
         </style>
       </head>
       <body>
@@ -184,26 +184,26 @@ export const emailTemplates = {
             </div>
             
             <div class="content">
-              <p style="font-size: 18px; color: #b9bbbe; margin-bottom: 20px;">Hey ${username}!</p>
-              <p style="color: #b9bbbe; margin-bottom: 30px;">Here's your verification code:</p>
+              <p style="font-size: 18px; color: #cbd5e1; margin-bottom: 20px;">Hey ${username}!</p>
+              <p style="color: #cbd5e1; margin-bottom: 30px;">Here's your verification code:</p>
               
               <div class="code-box">
                 <div class="code">${code}</div>
               </div>
               
-              <p style="color: #b9bbbe; margin-bottom: 10px;">Enter this code in EchoChat to complete your login.</p>
-              <p style="color: #72767d; font-size: 14px;"><strong>This code expires in 10 minutes.</strong></p>
+              <p style="color: #cbd5e1; margin-bottom: 10px;">Enter this code in Collabrix to complete your login.</p>
+              <p style="color: #64748b; font-size: 14px;"><strong>This code expires in 10 minutes.</strong></p>
               
               <div class="warning">
                 <div class="warning-title">⚠️ Security Notice</div>
                 <p style="color: #ffffff; font-size: 14px;">Never share this code with anyone. Our team will never ask for your verification code.</p>
               </div>
               
-              <p style="color: #72767d; font-size: 14px;">If you didn't request this code, please secure your account immediately.</p>
+              <p style="color: #64748b; font-size: 14px;">If you didn't request this code, please secure your account immediately.</p>
             </div>
             
             <div class="footer">
-              <p>© 2024 EchoChat. All rights reserved.</p>
+              <p>© 2024 Collabrix. All rights reserved.</p>
             </div>
           </div>
         </div>

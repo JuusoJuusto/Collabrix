@@ -1,6 +1,6 @@
-# EchoChat 💬
+# Collabrix 💬
 
-Real-time chat platform with Discord-like features. Built with React, Node.js, Socket.io, and Firebase.
+Modern real-time collaboration platform. Built with React, Node.js, Socket.io, and Firebase.
 
 ## 🚀 Quick Start
 

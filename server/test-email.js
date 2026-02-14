@@ -47,7 +47,7 @@ transporter.verify((error, success) => {
     const testEmail = {
       from: `"${process.env.SMTP_FROM_NAME || 'EchoChat'}" <${process.env.SMTP_FROM_EMAIL || 'juusojuusto112@gmail.com'}>`,
       to: process.env.SMTP_USER || 'juusojuusto112@gmail.com', // Send to yourself
-      subject: '🎉 Test Email from EchoChat',
+      subject: '🎉 Test Email from Collabrix',
       html: `
         <!DOCTYPE html>
         <html>
@@ -70,7 +70,7 @@ transporter.verify((error, success) => {
               <div class="success">
                 <strong>✅ Your email system is working perfectly!</strong>
               </div>
-              <p>Congratulations! Your EchoChat can now send custom emails.</p>
+              <p>Congratulations! Your Collabrix can now send custom emails.</p>
               <p><strong>What's working:</strong></p>
               <ul>
                 <li>✅ SMTP connection established</li>
@@ -78,7 +78,7 @@ transporter.verify((error, success) => {
                 <li>✅ Email templates rendering correctly</li>
                 <li>✅ Ready to send welcome emails, 2FA codes, and more!</li>
               </ul>
-              <p>This test email was sent from your EchoChat server at ${new Date().toLocaleString()}.</p>
+              <p>This test email was sent from your Collabrix server at ${new Date().toLocaleString()}.</p>
               <p><strong>Next steps:</strong></p>
               <ol>
                 <li>Register a new user to test welcome emails</li>
@@ -87,7 +87,7 @@ transporter.verify((error, success) => {
               </ol>
             </div>
             <div class="footer">
-              <p>© 2024 EchoChat. All rights reserved.</p>
+              <p>© 2024 Collabrix. All rights reserved.</p>
               <p>This is a test email from your SMTP configuration.</p>
             </div>
           </div>
