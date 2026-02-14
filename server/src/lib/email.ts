@@ -74,7 +74,7 @@ export const emailTemplates = {
           body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0f172a; color: #e2e8f0; line-height: 1.6; }
           .email-wrapper { background-color: #0f172a; padding: 40px 20px; }
           .email-container { max-width: 600px; margin: 0 auto; background-color: #1e293b; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
-          .header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 40px 30px; text-align: center; }
+          .header { background: #4f46e5; padding: 40px 30px; text-align: center; }
           .header h1 { color: #ffffff; font-size: 32px; font-weight: 700; margin-bottom: 8px; }
           .header p { color: #e0e7ff; font-size: 16px; }
           .content { padding: 40px 30px; }
@@ -143,7 +143,7 @@ export const emailTemplates = {
             </div>
             
             <div class="footer">
-              <p>© 2024 Collabrix. All rights reserved.</p>
+              <p>© 2026 Collabrix. All rights reserved.</p>
               <p style="margin-top: 10px;">This email was sent to <strong>${username}</strong></p>
             </div>
           </div>
@@ -166,7 +166,7 @@ export const emailTemplates = {
           body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #0f172a; color: #e2e8f0; }
           .email-wrapper { background-color: #0f172a; padding: 40px 20px; }
           .email-container { max-width: 600px; margin: 0 auto; background-color: #1e293b; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
-          .header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 40px 30px; text-align: center; }
+          .header { background: #4f46e5; padding: 40px 30px; text-align: center; }
           .header h1 { color: #ffffff; font-size: 28px; font-weight: 700; }
           .content { padding: 40px 30px; text-align: center; }
           .code-box { background-color: #0f172a; border: 2px solid #6366f1; border-radius: 12px; padding: 30px; margin: 30px 0; }
@@ -203,7 +203,7 @@ export const emailTemplates = {
             </div>
             
             <div class="footer">
-              <p>© 2024 Collabrix. All rights reserved.</p>
+              <p>© 2026 Collabrix. All rights reserved.</p>
             </div>
           </div>
         </div>
@@ -332,3 +332,4 @@ export const emailTemplates = {
 };
 
 export default { sendEmail, emailTemplates };
+

@@ -69,7 +69,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
       
       if (memberDoc.exists) {
         const channelsSnapshot = await db.collection('servers').doc(doc.id).collection('channels').orderBy('position').get();
-        const channels = channelsSnapshot.docs.map(c => ({ id: c.id, ...c.data() }));
+        const channels = channelsSnapshot.docs.map((c: any) => ({ id: c.id, ...c.data() }));
 
         const membersSnapshot = await db.collection('servers').doc(doc.id).collection('members').get();
         const members = [];
@@ -118,7 +118,7 @@ router.get('/:serverId', authenticate, async (req: AuthRequest, res) => {
     }
 
     const channelsSnapshot = await db.collection('servers').doc(serverId).collection('channels').orderBy('position').get();
-    const channels = channelsSnapshot.docs.map(c => ({ id: c.id, ...c.data() }));
+    const channels = channelsSnapshot.docs.map((c: any) => ({ id: c.id, ...c.data() }));
 
     const membersSnapshot = await db.collection('servers').doc(serverId).collection('members').get();
     const members = [];
