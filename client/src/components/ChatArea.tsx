@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
 import { useChatStore } from '../store/chatStore';
-import { useAuthStore } from '../store/authStore';
 import { channelAPI } from '../lib/api';
 import { socketClient } from '../lib/socket';
 import { format } from 'date-fns';
