@@ -25,12 +25,17 @@ export const setupSocketHandlers = (io: Server) => {
   io.on('connection', async (socket: AuthSocket) => {
     console.log(`User connected: ${socket.userId}`);
 
-    await db.collection('users').doc(socket.userId!).update({
-      status: 'ONLINE',
-      lastSeen: new Date().toISOString()
-    });
+    try {
+      // Use set with merge to create document if it doesn't exist
+      await db.collection('users').doc(socket.userId!).set({
+        status: 'ONLINE',
+        lastSeen: new Date().toISOString()
+      }, { merge: true });
 
-    io.emit('user:status', { userId: socket.userId, status: 'ONLINE' });
+      io.emit('user:status', { userId: socket.userId, status: 'ONLINE' });
+    } catch (error) {
+      console.error('Error updating user status:', error);
+    }
 
     socket.on('channel:join', (channelId: string) => {
       socket.join(`channel:${channelId}`);
@@ -180,12 +185,16 @@ export const setupSocketHandlers = (io: Server) => {
     socket.on('disconnect', async () => {
       console.log(`User disconnected: ${socket.userId}`);
       
-      await db.collection('users').doc(socket.userId!).update({
-        status: 'OFFLINE',
-        lastSeen: new Date().toISOString()
-      });
+      try {
+        await db.collection('users').doc(socket.userId!).set({
+          status: 'OFFLINE',
+          lastSeen: new Date().toISOString()
+        }, { merge: true });
 
-      io.emit('user:status', { userId: socket.userId, status: 'OFFLINE' });
+        io.emit('user:status', { userId: socket.userId, status: 'OFFLINE' });
+      } catch (error) {
+        console.error('Error updating user status on disconnect:', error);
+      }
     });
   });
 };
