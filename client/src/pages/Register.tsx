@@ -156,7 +156,11 @@ export default function Register() {
       const user = userCredential.user;
 
       // Send email verification
-      await sendEmailVerification(user);
+      const actionCodeSettings = {
+        url: `${window.location.origin}/auth/action`,
+        handleCodeInApp: false
+      };
+      await sendEmailVerification(user, actionCodeSettings);
       setVerificationSent(true);
 
       const token = await user.getIdToken();
