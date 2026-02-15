@@ -518,6 +518,17 @@ export default function Register() {
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     <select
+                      value={formData.birthdayDay}
+                      onChange={(e) => setFormData({ ...formData, birthdayDay: e.target.value })}
+                      className="px-3 py-2 bg-discord-dark text-white rounded focus:outline-none focus:ring-2 focus:ring-discord-blurple"
+                      required
+                    >
+                      <option value="">Day</option>
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                        <option key={day} value={day}>{day}</option>
+                      ))}
+                    </select>
+                    <select
                       value={formData.birthdayMonth}
                       onChange={(e) => setFormData({ ...formData, birthdayMonth: e.target.value })}
                       className="px-3 py-2 bg-discord-dark text-white rounded focus:outline-none focus:ring-2 focus:ring-discord-blurple"
@@ -538,17 +549,6 @@ export default function Register() {
                       <option value="12">Dec</option>
                     </select>
                     <select
-                      value={formData.birthdayDay}
-                      onChange={(e) => setFormData({ ...formData, birthdayDay: e.target.value })}
-                      className="px-3 py-2 bg-discord-dark text-white rounded focus:outline-none focus:ring-2 focus:ring-discord-blurple"
-                      required
-                    >
-                      <option value="">Day</option>
-                      {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
-                        <option key={day} value={day}>{day}</option>
-                      ))}
-                    </select>
-                    <select
                       value={formData.birthdayYear}
                       onChange={(e) => setFormData({ ...formData, birthdayYear: e.target.value })}
                       className="px-3 py-2 bg-discord-dark text-white rounded focus:outline-none focus:ring-2 focus:ring-discord-blurple"
@@ -560,7 +560,7 @@ export default function Register() {
                       ))}
                     </select>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Must be 13+</p>
+                  <p className="text-xs text-gray-500 mt-1">Must be 13+ (Day/Month/Year)</p>
                 </div>
 
                 <div>
@@ -729,6 +729,17 @@ export default function Register() {
               </label>
               <div className="grid grid-cols-3 gap-2">
                 <select
+                  value={formData.birthdayDay}
+                  onChange={(e) => setFormData({ ...formData, birthdayDay: e.target.value })}
+                  className="px-3 py-2 bg-discord-dark text-white rounded focus:outline-none focus:ring-2 focus:ring-discord-blurple"
+                  required
+                >
+                  <option value="">Day</option>
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                    <option key={day} value={day}>{day}</option>
+                  ))}
+                </select>
+                <select
                   value={formData.birthdayMonth}
                   onChange={(e) => setFormData({ ...formData, birthdayMonth: e.target.value })}
                   className="px-3 py-2 bg-discord-dark text-white rounded focus:outline-none focus:ring-2 focus:ring-discord-blurple"
@@ -749,17 +760,6 @@ export default function Register() {
                   <option value="12">December</option>
                 </select>
                 <select
-                  value={formData.birthdayDay}
-                  onChange={(e) => setFormData({ ...formData, birthdayDay: e.target.value })}
-                  className="px-3 py-2 bg-discord-dark text-white rounded focus:outline-none focus:ring-2 focus:ring-discord-blurple"
-                  required
-                >
-                  <option value="">Day</option>
-                  {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
-                    <option key={day} value={day}>{day}</option>
-                  ))}
-                </select>
-                <select
                   value={formData.birthdayYear}
                   onChange={(e) => setFormData({ ...formData, birthdayYear: e.target.value })}
                   className="px-3 py-2 bg-discord-dark text-white rounded focus:outline-none focus:ring-2 focus:ring-discord-blurple"
@@ -771,7 +771,7 @@ export default function Register() {
                   ))}
                 </select>
               </div>
-              <p className="text-xs text-gray-500 mt-1">Must be 13+</p>
+              <p className="text-xs text-gray-500 mt-1">Must be 13+ (Day/Month/Year)</p>
             </div>
 
             <div>
