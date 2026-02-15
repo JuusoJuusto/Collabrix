@@ -17,7 +17,7 @@ function createWindow() {
       webSecurity: true
     },
     backgroundColor: '#0f172a',
-    show: false,
+    show: true,
     frame: true,
     titleBarStyle: 'default'
   });
@@ -25,9 +25,28 @@ function createWindow() {
   // Load the web app
   mainWindow.loadURL('https://collabrixs.vercel.app');
 
-  // Show window when ready
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
+  // Show loading message
+  mainWindow.webContents.on('did-start-loading', () => {
+    console.log('Loading Collabrix...');
+  });
+
+  // Handle load errors
+  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+    console.error('Failed to load:', errorDescription);
+    mainWindow.loadURL(`data:text/html,
+      <html>
+        <body style="background: #0f172a; color: white; font-family: Arial; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
+          <div style="text-align: center;">
+            <h1>⚠️ Connection Error</h1>
+            <p>Could not connect to Collabrix</p>
+            <p style="color: #888;">Error: ${errorDescription}</p>
+            <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #5865F2; color: white; border: none; border-radius: 5px; cursor: pointer;">
+              Retry
+            </button>
+          </div>
+        </body>
+      </html>
+    `);
   });
 
   // Open external links in browser
