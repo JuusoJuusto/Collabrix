@@ -17,18 +17,25 @@ export default function ServerList() {
     setError('');
     
     try {
+      console.log('🏗️ Creating server:', serverName);
       const data = await serverAPI.create({ 
         name: serverName,
         description: serverDescription || undefined
       });
+      console.log('✅ Server created:', data);
       addServer(data);
       setCurrentServer(data);
       setShowCreateModal(false);
       setServerName('');
       setServerDescription('');
     } catch (error: any) {
-      console.error('Failed to create server:', error);
-      setError(error.message || 'Failed to create server. Please try again.');
+      console.error('❌ Failed to create server:', error);
+      
+      if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+        setError('Cannot connect to server. Make sure the backend is running at: ' + (import.meta.env.VITE_API_URL || 'http://localhost:3001'));
+      } else {
+        setError(error.message || 'Failed to create server. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
