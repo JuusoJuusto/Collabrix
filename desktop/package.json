@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "build": "electron-builder",
-    "build:win": "electron-builder --win",
+    "build:win": "electron-builder --win --x64",
     "build:mac": "electron-builder --mac",
     "build:linux": "electron-builder --linux"
   },
@@ -19,7 +19,8 @@
     "files": [
       "main.js",
       "preload.js",
-      "icon.png"
+      "icon.png",
+      "icon.ico"
     ],
     "win": {
       "target": [
@@ -28,14 +29,21 @@
           "arch": ["x64"]
         }
       ],
-      "icon": "icon.png",
-      "sign": null
+      "icon": "icon.ico",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
       "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+      "createStartMenuShortcut": true,
+      "shortcutName": "Collabrix",
+      "installerIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico",
+      "installerHeaderIcon": "icon.ico",
+      "deleteAppDataOnUninstall": false,
+      "menuCategory": true
     },
     "mac": {
       "target": "dmg",
