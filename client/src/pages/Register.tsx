@@ -206,7 +206,10 @@ export default function Register() {
       // Send welcome email via backend
       try {
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-        await fetch(`${apiUrl}/auth/send-welcome-email`, {
+        console.log('📧 Sending welcome email to:', formData.email);
+        console.log('📡 API URL:', apiUrl);
+        
+        const response = await fetch(`${apiUrl}/auth/send-welcome-email`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -217,8 +220,18 @@ export default function Register() {
             userId: user.uid
           })
         });
-      } catch (emailError) {
-        console.error('Failed to send welcome email:', emailError);
+
+        const result = await response.json();
+        console.log('📧 Email response:', result);
+        
+        if (!response.ok) {
+          console.error('❌ Email failed:', result);
+        } else {
+          console.log('✅ Welcome email sent successfully');
+        }
+      } catch (emailError: any) {
+        console.error('❌ Failed to send welcome email:', emailError);
+        console.error('Error details:', emailError.message);
         // Don't block registration if email fails
       }
       
@@ -372,7 +385,10 @@ export default function Register() {
       // Send welcome email
       try {
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-        await fetch(`${apiUrl}/auth/send-welcome-email`, {
+        console.log('📧 Sending welcome email to:', googleUser.email);
+        console.log('📡 API URL:', apiUrl);
+        
+        const response = await fetch(`${apiUrl}/auth/send-welcome-email`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -383,8 +399,18 @@ export default function Register() {
             userId: googleUser.uid
           })
         });
-      } catch (emailError) {
-        console.error('Failed to send welcome email:', emailError);
+
+        const result = await response.json();
+        console.log('📧 Email response:', result);
+        
+        if (!response.ok) {
+          console.error('❌ Email failed:', result);
+        } else {
+          console.log('✅ Welcome email sent successfully');
+        }
+      } catch (emailError: any) {
+        console.error('❌ Failed to send welcome email:', emailError);
+        console.error('Error details:', emailError.message);
       }
       
       navigate('/');
