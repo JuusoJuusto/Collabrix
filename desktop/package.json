@@ -28,7 +28,8 @@
           "arch": ["x64"]
         }
       ],
-      "icon": "icon.png"
+      "icon": "icon.png",
+      "sign": null
     },
     "nsis": {
       "oneClick": false,
