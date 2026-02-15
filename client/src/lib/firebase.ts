@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from 'firebase/app';
-import { getAuth, connectAuthEmulator } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -19,15 +19,5 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
-
-// Enable offline persistence for Firestore
-if (typeof window !== 'undefined') {
-  try {
-    // Firestore will work offline if blocked by adblocker
-    db.settings = { ignoreUndefinedProperties: true };
-  } catch (error) {
-    console.warn('Firestore settings error:', error);
-  }
-}
 
 export default app;
