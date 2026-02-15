@@ -1,0 +1,7 @@
+server/
+desktop/
+node_modules/
+*.md
+*.bat
+.git/
+.env
