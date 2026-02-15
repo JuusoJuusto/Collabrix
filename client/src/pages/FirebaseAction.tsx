@@ -18,9 +18,12 @@ export default function FirebaseAction() {
       const actionMode = searchParams.get('mode');
       const code = searchParams.get('oobCode');
 
+      console.log('Action mode:', actionMode);
+      console.log('Code:', code ? 'present' : 'missing');
+
       if (!code || !actionMode) {
         setStatus('error');
-        setMessage('Invalid action link');
+        setMessage('Invalid action link. Please check your email and try again.');
         return;
       }
 
@@ -30,6 +33,7 @@ export default function FirebaseAction() {
       try {
         switch (actionMode) {
           case 'verifyEmail':
+            console.log('Verifying email...');
             await applyActionCode(auth, code);
             setStatus('success');
             setMessage('Email verified successfully! You can now log in.');
@@ -37,6 +41,7 @@ export default function FirebaseAction() {
             break;
 
           case 'resetPassword':
+            console.log('Verifying password reset code...');
             await verifyPasswordResetCode(auth, code);
             setStatus('success');
             setMessage('Please enter your new password');
@@ -63,13 +68,17 @@ export default function FirebaseAction() {
         }
       } catch (error: any) {
         console.error('Action error:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
         setStatus('error');
         if (error.code === 'auth/invalid-action-code') {
-          setMessage('This link is invalid or has expired');
+          setMessage('This link is invalid or has already been used.');
         } else if (error.code === 'auth/expired-action-code') {
           setMessage('This link has expired. Please request a new one.');
+        } else if (error.message && error.message.includes('sessionStorage')) {
+          setMessage('Browser storage error. Please enable cookies and try again in a regular browser window (not incognito).');
         } else {
-          setMessage('An error occurred. Please try again.');
+          setMessage(`An error occurred: ${error.message || 'Please try again.'}`);
         }
       }
     };

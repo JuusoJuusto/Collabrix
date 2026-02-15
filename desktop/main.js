@@ -14,16 +14,18 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
-      webSecurity: true
+      webSecurity: true,
+      partition: 'persist:collabrix'
     },
     backgroundColor: '#0f172a',
     show: true,
-    frame: true,
-    titleBarStyle: 'default'
+    frame: false,
+    titleBarStyle: 'hidden',
+    autoHideMenuBar: true
   });
 
-  // Load the web app
-  mainWindow.loadURL('https://collabrixs.vercel.app');
+  // Load the custom titlebar with embedded web app
+  mainWindow.loadFile(path.join(__dirname, 'titlebar.html'));
 
   // Show loading message
   mainWindow.webContents.on('did-start-loading', () => {

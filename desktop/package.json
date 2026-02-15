@@ -19,6 +19,7 @@
     "files": [
       "main.js",
       "preload.js",
+      "titlebar.html",
       "icon.png",
       "icon.ico"
     ],

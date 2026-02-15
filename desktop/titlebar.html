@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      overflow: hidden;
+    }
+    
+    #titlebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 32px;
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      -webkit-app-region: drag;
+      z-index: 999999;
+      border-bottom: 1px solid #1e293b;
+    }
+    
+    #titlebar-title {
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    #titlebar-controls {
+      display: flex;
+      -webkit-app-region: no-drag;
+    }
+    
+    .titlebar-button {
+      width: 46px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    
+    .titlebar-button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .titlebar-button.close:hover {
+      background: #ef4444;
+      color: white;
+    }
+    
+    #app-content {
+      margin-top: 32px;
+      height: calc(100vh - 32px);
+      width: 100vw;
+    }
+    
+    #app-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="titlebar">
+    <div id="titlebar-title">
+      <span>💬</span>
+      <span>Collabrix</span>
+    </div>
+    <div id="titlebar-controls">
+      <button class="titlebar-button" id="minimize" title="Minimize">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+          <rect x="0" y="5" width="12" height="2"/>
+        </svg>
+      </button>
+      <button class="titlebar-button" id="maximize" title="Maximize">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1">
+          <rect x="1" y="1" width="10" height="10"/>
+        </svg>
+      </button>
+      <button class="titlebar-button close" id="close" title="Close">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M1 1 L11 11 M11 1 L1 11"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  
+  <div id="app-content">
+    <iframe id="app-frame" src="https://collabrixs.vercel.app"></iframe>
+  </div>
+  
+  <script>
+    document.getElementById('minimize').addEventListener('click', () => {
+      window.electronAPI.minimizeWindow();
+    });
+    
+    document.getElementById('maximize').addEventListener('click', () => {
+      window.electronAPI.maximizeWindow();
+    });
+    
+    document.getElementById('close').addEventListener('click', () => {
+      window.electronAPI.closeWindow();
+    });
+  </script>
+</body>
+</html>

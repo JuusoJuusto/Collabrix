@@ -1,20 +1,39 @@
-QUICK ICON SETUP
-================
+ICON FILES REQUIRED BEFORE BUILDING
+====================================
 
-You need icon.ico and icon.png files.
+You need TWO icon files in this folder:
 
-EASIEST WAY:
-1. Go to: https://www.icoconverter.com/
-2. Upload any image (logo, emoji, etc.)
-3. Download as .ico
-4. Save as "icon.ico" in this folder
-5. Also save a PNG version as "icon.png"
+1. icon.ico (Windows icon, 256x256 pixels)
+2. icon.png (PNG icon, 512x512 pixels)
 
-OR use online emoji converter:
-1. Go to: https://emoji.gg/
-2. Search for "chat" or "message"
-3. Download PNG
-4. Convert to ICO at icoconverter.com
-5. Save both files here
+HOW TO CREATE ICONS:
+--------------------
 
-Then run: build-windows.bat
+Option 1 - Use an online converter:
+  1. Create or find a 512x512 PNG image
+  2. Go to https://convertio.co/png-ico/
+  3. Upload your PNG and convert to ICO
+  4. Download both files and place them here
+
+Option 2 - Use GIMP (free software):
+  1. Download GIMP from https://www.gimp.org/
+  2. Create a 512x512 image
+  3. Export as PNG (icon.png)
+  4. Export as ICO (icon.ico)
+
+Option 3 - Use Photoshop/Illustrator:
+  1. Create your icon design
+  2. Export as 512x512 PNG (icon.png)
+  3. Use a plugin or online tool to convert to ICO
+
+RECOMMENDED ICON DESIGN:
+------------------------
+- Simple, recognizable design
+- Works well at small sizes (16x16, 32x32)
+- Use the Collabrix colors: #5865F2 (Discord blue)
+- Consider using the 💬 emoji or chat bubble design
+
+AFTER ADDING ICONS:
+-------------------
+Run build-windows.bat to create the installer
+The installer will be in the dist/ folder

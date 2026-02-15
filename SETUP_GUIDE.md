@@ -23,6 +23,8 @@
 - **Status:** Ready to build
 - **Output:** Windows installer .exe
 - **Features:**
+  - Frameless window (no menu bar)
+  - Custom title bar with window controls
   - Installs to Program Files
   - Start Menu shortcut
   - Desktop shortcut
@@ -152,7 +154,8 @@ Update owlapps to show download button:
 - ✅ Friend system
 
 ### Desktop
-- ✅ Native window
+- ✅ Frameless native window
+- ✅ Custom title bar
 - ✅ System tray integration
 - ✅ Start Menu entry
 - ✅ Desktop shortcut

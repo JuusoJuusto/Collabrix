@@ -1,45 +1,48 @@
 @echo off
 echo ========================================
-echo   Building Collabrix Desktop Installer
+echo Building Collabrix Desktop Installer
 echo ========================================
 echo.
 
-cd /d "%~dp0"
+REM Check if icon files exist
+if not exist "icon.ico" (
+    echo ERROR: icon.ico not found!
+    echo Please add icon.ico before building
+    pause
+    exit /b 1
+)
 
-echo [1/3] Installing dependencies...
+if not exist "icon.png" (
+    echo ERROR: icon.png not found!
+    echo Please add icon.png before building
+    pause
+    exit /b 1
+)
+
+echo Installing dependencies...
 call npm install
 
-if errorlevel 1 (
-    echo ❌ Failed to install dependencies
-    pause
-    exit /b 1
-)
-
 echo.
-echo [2/3] Building Windows installer...
-echo This may take 2-3 minutes...
+echo Building Windows installer...
 call npm run build:win
 
-if errorlevel 1 (
-    echo ❌ Build failed!
-    pause
-    exit /b 1
+echo.
+if exist "dist\Collabrix-Setup-*.exe" (
+    echo ========================================
+    echo BUILD SUCCESSFUL!
+    echo ========================================
+    echo.
+    echo Installer created in: dist\
+    echo.
+    dir /b dist\*.exe
+    echo.
+    echo You can now install Collabrix on your computer!
+) else (
+    echo ========================================
+    echo BUILD FAILED!
+    echo ========================================
+    echo Check the error messages above
 )
 
 echo.
-echo [3/3] Build complete!
-echo.
-echo ========================================
-echo   SUCCESS!
-echo ========================================
-echo.
-echo Installer: %CD%\dist\Collabrix-Setup-1.0.0.exe
-echo.
-echo The installer will:
-echo - Install to Program Files
-echo - Create Start Menu shortcut
-echo - Create Desktop shortcut
-echo - Add to Windows Apps list
-echo.
-start "" "%CD%\dist"
 pause
