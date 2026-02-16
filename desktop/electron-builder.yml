@@ -31,7 +31,7 @@ nsis:
   deleteAppDataOnUninstall: false
   menuCategory: true
   runAfterFinish: true
-  perMachine: true
+  perMachine: false
   packElevateHelper: false
   differentialPackage: true
 publish:

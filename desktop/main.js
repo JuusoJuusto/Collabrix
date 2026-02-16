@@ -20,7 +20,10 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       webSecurity: true,
-      partition: 'persist:collabrix'
+      partition: 'persist:collabrix',
+      allowRunningInsecureContent: false,
+      enableRemoteModule: false,
+      nativeWindowOpen: true
     },
     backgroundColor: '#0f172a',
     show: true,
@@ -58,6 +61,22 @@ function createWindow() {
 
   // Open external links in browser
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    // Allow Google OAuth popups
+    if (url.includes('accounts.google.com') || url.includes('firebase') || url.includes('googleapis.com')) {
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          width: 500,
+          height: 600,
+          webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true
+          }
+        }
+      };
+    }
+    
+    // Open other external links in default browser
     shell.openExternal(url);
     return { action: 'deny' };
   });
