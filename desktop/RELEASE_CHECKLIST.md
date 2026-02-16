@@ -31,16 +31,10 @@ Edit `package.json`:
 Double-click: `BUILD-INSTALLER-ADMIN.bat`
 
 Wait 2-3 minutes. Creates:
-- `dist/collabrix-desktop Setup 1.1.0.exe`
+- `dist/Collabrix-Setup-1.1.0.exe`
+- `dist/latest.yml` (automatically generated!)
 
-### Step 3: Generate Update File
-
-Double-click: `generate-update-file.bat`
-
-Creates:
-- `dist/latest.yml`
-
-### Step 4: Upload to GitHub
+### Step 3: Upload to GitHub
 
 1. Go to: https://github.com/JuusoJuusto/Collabrix/releases
 2. Click "Create a new release"
@@ -56,12 +50,12 @@ Creates:
    ## Auto-Update
    Existing users will be notified automatically!
    ```
-6. Upload files:
-   - `collabrix-desktop Setup 1.1.0.exe`
+5. Upload files:
+   - `Collabrix-Setup-1.1.0.exe`
    - `latest.yml`
 7. Click "Publish release"
 
-### Step 5: Done!
+### Step 4: Done!
 
 Users with v1.0.0 will see update notification automatically!
 
@@ -69,10 +63,10 @@ Users with v1.0.0 will see update notification automatically!
 
 For your first release:
 
-1. Run: `generate-update-file.bat`
+1. Build with: `BUILD-INSTALLER-ADMIN.bat`
 2. Upload to GitHub Releases:
-   - `collabrix-desktop Setup 1.0.0.exe`
-   - `latest.yml`
+   - `Collabrix-Setup-1.0.0.exe`
+   - `latest.yml` (auto-generated)
 3. Tag: `v1.0.0`
 4. Publish
 
@@ -102,21 +96,19 @@ Now users can install v1.0.0, and they'll get auto-updates for future versions!
 # Update version
 Edit package.json → "version": "1.1.0"
 
-# Build
+# Build (creates both .exe and latest.yml automatically)
 Double-click: BUILD-INSTALLER-ADMIN.bat
 
-# Generate update file
-Double-click: generate-update-file.bat
-
 # Upload to GitHub
-- collabrix-desktop Setup 1.1.0.exe
+- Collabrix-Setup-1.1.0.exe
 - latest.yml
 - Tag: v1.1.0
 ```
 
 ## Summary
 
-✅ Installer built: `dist/collabrix-desktop Setup 1.0.0.exe`
+✅ Installer built: `dist/Collabrix-Setup-1.0.0.exe`
+✅ Update file: `dist/latest.yml` (auto-generated!)
 ✅ Auto-update system: Working
 ✅ Update notification: In-app (top-right)
 ✅ Update download: Automatic (background)
