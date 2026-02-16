@@ -7,23 +7,31 @@ echo NOTE: This creates a portable app (no installer needed)
 echo No admin rights required!
 echo.
 
-REM Check if icon files exist
-if not exist "icon.ico" (
-    echo ERROR: icon.ico not found!
+REM Check if icon files exist in current directory
+if not exist "%~dp0icon.ico" (
+    echo ERROR: icon.ico not found in desktop folder!
+    echo Current directory: %CD%
+    echo Looking for: %~dp0icon.ico
     echo Please add icon.ico before building
     pause
     exit /b 1
 )
 
-if not exist "icon.png" (
-    echo ERROR: icon.png not found!
+if not exist "%~dp0icon.png" (
+    echo ERROR: icon.png not found in desktop folder!
+    echo Current directory: %CD%
+    echo Looking for: %~dp0icon.png
     echo Please add icon.png before building
     pause
     exit /b 1
 )
 
+echo Found icon files:
+dir /b "%~dp0icon.*"
+echo.
+
 echo Cleaning old build...
-if exist "dist" rmdir /s /q "dist"
+if exist "%~dp0dist" rmdir /s /q "%~dp0dist"
 
 echo.
 echo Installing dependencies...
@@ -35,7 +43,7 @@ set CSC_IDENTITY_AUTO_DISCOVERY=false
 call npm run build
 
 echo.
-if exist "dist\win-unpacked" (
+if exist "%~dp0dist\win-unpacked" (
     echo ========================================
     echo BUILD SUCCESSFUL!
     echo ========================================
