@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "build": "electron-builder",
-    "build:win": "electron-builder --win --x64 --config.win.sign=null",
+    "build:win": "electron-builder --win --x64",
     "build:mac": "electron-builder --mac",
     "build:linux": "electron-builder --linux"
   },
@@ -31,7 +31,8 @@
         }
       ],
       "icon": "icon.ico",
-      "artifactName": "${productName}-Setup-${version}.${ext}"
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "publisherName": "StudiOWL"
     },
     "nsis": {
       "oneClick": false,
@@ -47,7 +48,13 @@
       "menuCategory": true,
       "runAfterFinish": true,
       "perMachine": true,
-      "packElevateHelper": false
+      "packElevateHelper": false,
+      "differentialPackage": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "JuusoJuusto",
+      "repo": "Collabrix"
     },
     "mac": {
       "target": "dmg",
@@ -72,6 +79,7 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^28.0.0",
-    "electron-builder": "^24.9.1"
+    "electron-builder": "^24.9.1",
+    "electron-updater": "^6.1.7"
   }
 }

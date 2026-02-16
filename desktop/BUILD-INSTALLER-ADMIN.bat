@@ -48,24 +48,35 @@ echo [OK] Found icon files
 echo.
 
 :: Clean old builds
-echo [1/4] Cleaning old builds...
+echo [1/5] Cleaning old builds...
 if exist "%~dp0dist" (
     rmdir /s /q "%~dp0dist" 2>nul
 )
 
 :: Clean problematic cache
-echo [2/4] Cleaning code signing cache...
+echo [2/5] Cleaning code signing cache...
 if exist "%LOCALAPPDATA%\electron-builder\Cache\winCodeSign" (
     rmdir /s /q "%LOCALAPPDATA%\electron-builder\Cache\winCodeSign" 2>nul
 )
 
 :: Install dependencies
-echo [3/4] Installing dependencies...
+echo [3/5] Installing dependencies...
 cd /d "%~dp0"
-call npm install >nul 2>&1
+call npm install
+
+:: Create electron-builder config to skip signing
+echo [4/5] Configuring build (skip code signing)...
+(
+echo module.exports = {
+echo   "win": {
+echo     "sign": null,
+echo     "signingHashAlgorithms": []
+echo   }
+echo }
+) > electron-builder-config.js
 
 :: Build installer
-echo [4/4] Building installer (this takes 2-3 minutes)...
+echo [5/5] Building installer (this takes 2-3 minutes^)...
 echo       Please wait...
 echo.
 
@@ -73,7 +84,10 @@ set CSC_IDENTITY_AUTO_DISCOVERY=false
 set WIN_CSC_LINK=
 set WIN_CSC_KEY_PASSWORD=
 
-call npm run build:win
+call npx electron-builder --win --x64 --config electron-builder-config.js
+
+:: Clean up config
+if exist "electron-builder-config.js" del "electron-builder-config.js"
 
 echo.
 :: Check if successful

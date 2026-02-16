@@ -76,6 +76,98 @@
       height: 100%;
       border: none;
     }
+    
+    #update-notification {
+      position: fixed;
+      top: 40px;
+      right: 10px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      z-index: 999998;
+      min-width: 320px;
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    #update-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    #update-icon {
+      font-size: 32px;
+      animation: rotate 2s linear infinite;
+    }
+    
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    #update-text {
+      flex: 1;
+    }
+    
+    #update-title {
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    
+    #update-message {
+      color: #94a3b8;
+      font-size: 12px;
+    }
+    
+    #update-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .update-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .update-btn.primary {
+      background: #5865F2;
+      color: white;
+    }
+    
+    .update-btn.primary:hover {
+      background: #4752C4;
+    }
+    
+    .update-btn:not(.primary) {
+      background: transparent;
+      color: #94a3b8;
+      border: 1px solid #334155;
+    }
+    
+    .update-btn:not(.primary):hover {
+      background: #334155;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -107,6 +199,21 @@
     <iframe id="app-frame" src="https://collabrixs.vercel.app"></iframe>
   </div>
   
+  <!-- Update notification -->
+  <div id="update-notification" style="display: none;">
+    <div id="update-content">
+      <div id="update-icon">🔄</div>
+      <div id="update-text">
+        <div id="update-title">Update Available</div>
+        <div id="update-message">A new version of Collabrix is available</div>
+      </div>
+      <div id="update-actions">
+        <button id="update-download" class="update-btn primary">Download</button>
+        <button id="update-dismiss" class="update-btn">Later</button>
+      </div>
+    </div>
+  </div>
+  
   <script>
     document.getElementById('minimize').addEventListener('click', () => {
       window.electronAPI.minimizeWindow();
@@ -119,6 +226,43 @@
     document.getElementById('close').addEventListener('click', () => {
       window.electronAPI.closeWindow();
     });
+    
+    // Update notification handlers
+    let updateInfo = null;
+    
+    document.getElementById('update-download').addEventListener('click', () => {
+      document.getElementById('update-message').textContent = 'Downloading update...';
+      document.getElementById('update-download').disabled = true;
+      window.electronAPI.downloadUpdate();
+    });
+    
+    document.getElementById('update-dismiss').addEventListener('click', () => {
+      document.getElementById('update-notification').style.display = 'none';
+    });
+    
+    // Listen for update events from main process
+    if (window.electronAPI && window.electronAPI.onUpdateAvailable) {
+      window.electronAPI.onUpdateAvailable((info) => {
+        updateInfo = info;
+        document.getElementById('update-message').textContent = `Version ${info.version} is available`;
+        document.getElementById('update-notification').style.display = 'block';
+      });
+      
+      window.electronAPI.onUpdateDownloadProgress((progress) => {
+        document.getElementById('update-message').textContent = `Downloading... ${Math.round(progress.percent)}%`;
+      });
+      
+      window.electronAPI.onUpdateDownloaded((info) => {
+        document.getElementById('update-icon').textContent = '✅';
+        document.getElementById('update-title').textContent = 'Update Ready';
+        document.getElementById('update-message').textContent = 'Restart to install';
+        document.getElementById('update-download').textContent = 'Restart Now';
+        document.getElementById('update-download').disabled = false;
+        document.getElementById('update-download').onclick = () => {
+          window.electronAPI.installUpdate();
+        };
+      });
+    }
   </script>
 </body>
 </html>

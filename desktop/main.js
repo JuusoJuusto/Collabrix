@@ -1,7 +1,12 @@
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 
 let mainWindow;
+
+// Configure auto-updater
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = true;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -74,6 +79,11 @@ function createWindow() {
 // App lifecycle
 app.whenReady().then(() => {
   createWindow();
+  
+  // Check for updates after 3 seconds
+  setTimeout(() => {
+    checkForUpdates();
+  }, 3000);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -109,6 +119,73 @@ ipcMain.handle('maximize-window', () => {
 
 ipcMain.handle('close-window', () => {
   if (mainWindow) mainWindow.close();
+});
+
+// Auto-updater functions
+function checkForUpdates() {
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Skipping update check in development');
+    return;
+  }
+  
+  autoUpdater.checkForUpdates().catch(err => {
+    console.log('Update check failed:', err);
+  });
+}
+
+// Auto-updater events
+autoUpdater.on('update-available', (info) => {
+  console.log('Update available:', info.version);
+  
+  if (mainWindow) {
+    mainWindow.webContents.send('update-available', {
+      version: info.version,
+      releaseDate: info.releaseDate
+    });
+  }
+});
+
+autoUpdater.on('update-not-available', () => {
+  console.log('App is up to date');
+});
+
+autoUpdater.on('download-progress', (progress) => {
+  console.log(`Download progress: ${progress.percent}%`);
+  
+  if (mainWindow) {
+    mainWindow.webContents.send('update-download-progress', {
+      percent: progress.percent,
+      transferred: progress.transferred,
+      total: progress.total
+    });
+  }
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+  console.log('Update downloaded:', info.version);
+  
+  if (mainWindow) {
+    mainWindow.webContents.send('update-downloaded', {
+      version: info.version
+    });
+  }
+});
+
+autoUpdater.on('error', (err) => {
+  console.log('Update error:', err);
+});
+
+// IPC handlers for updates
+ipcMain.handle('download-update', () => {
+  autoUpdater.downloadUpdate();
+});
+
+ipcMain.handle('install-update', () => {
+  autoUpdater.quitAndInstall(false, true);
+});
+
+ipcMain.handle('check-for-updates', () => {
+  checkForUpdates();
 });
 
 // Auto-updater (optional - requires setup)
