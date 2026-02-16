@@ -81,8 +81,6 @@ echo       Please wait...
 echo.
 
 set CSC_IDENTITY_AUTO_DISCOVERY=false
-set WIN_CSC_LINK=
-set WIN_CSC_KEY_PASSWORD=
 
 call npx electron-builder --win --x64 --config electron-builder-config.js
 
@@ -90,21 +88,29 @@ call npx electron-builder --win --x64 --config electron-builder-config.js
 if exist "electron-builder-config.js" del "electron-builder-config.js"
 
 echo.
-:: Check if successful
-if exist "%~dp0dist\Collabrix-Setup-*.exe" (
+:: Check if successful (check for any .exe file in dist)
+if exist "%~dp0dist\*.exe" (
     color 0A
     echo ========================================
     echo   BUILD SUCCESSFUL!
     echo ========================================
     echo.
-    for %%F in ("%~dp0dist\Collabrix-Setup-*.exe") do (
-        echo   File: %%~nxF
-        echo   Size: %%~zF bytes
-        echo   Location: dist\
+    echo   Installer files created:
+    echo.
+    for %%F in ("%~dp0dist\*.exe") do (
+        echo   - %%~nxF (%%~zF bytes^)
     )
     echo.
+    echo   Location: dist\
+    echo.
     echo ========================================
-    echo   You can now install Collabrix!
+    echo   NEXT STEPS:
+    echo ========================================
+    echo   1. Test the installer
+    echo   2. Upload to GitHub Releases
+    echo   3. Users get auto-updates!
+    echo.
+    echo   See AUTO_UPDATE_GUIDE.md for details
     echo ========================================
 ) else (
     color 0C

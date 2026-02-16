@@ -35,6 +35,7 @@ nsis:
   packElevateHelper: false
   differentialPackage: true
 publish:
-  provider: github
-  owner: JuusoJuusto
-  repo: Collabrix
+  - provider: github
+    owner: JuusoJuusto
+    repo: Collabrix
+    releaseType: release

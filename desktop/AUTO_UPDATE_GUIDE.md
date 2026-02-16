@@ -1,20 +1,23 @@
 # Collabrix Auto-Update System
 
-## How It Works
+## How It Works (Like Discord!)
 
-The desktop app now has Discord-style auto-updates! When you release a new version, users will automatically get notified.
+The desktop app has AUTOMATIC updates! Users never download anything manually - it all happens inside the app.
 
-## Update Flow
+## Update Flow (100% Automatic)
 
-1. **App starts** → Checks for updates after 3 seconds
-2. **Update found** → Shows notification in top-right corner
-3. **User clicks "Download"** → Downloads update in background
-4. **Download complete** → Shows "Restart Now" button
-5. **User clicks "Restart Now"** → Installs update and restarts app
+1. **App starts** → Checks GitHub for new version (3 seconds after launch)
+2. **Update found** → Notification appears in app: "🔄 Update Available"
+3. **User clicks "Download"** → App downloads update IN THE BACKGROUND
+4. **Download complete** → Shows "✅ Update Ready - Restart Now"
+5. **User clicks "Restart Now"** → App installs update and restarts
+6. **Done!** → User now has the new version
+
+**Users NEVER leave the app. Everything happens automatically inside Collabrix!**
 
 ## For Users
 
-When an update is available, you'll see a notification like this:
+When an update is available, you'll see this notification in the top-right corner:
 
 ```
 🔄 Update Available
@@ -22,7 +25,9 @@ Version 1.1.0 is available
 [Download] [Later]
 ```
 
-Click "Download" to get the update. Once downloaded:
+Click "Download" - the update downloads in the background while you use the app.
+
+Once downloaded:
 
 ```
 ✅ Update Ready
@@ -30,7 +35,9 @@ Restart to install
 [Restart Now] [Later]
 ```
 
-Click "Restart Now" to install and restart the app.
+Click "Restart Now" - the app closes, installs the update, and reopens with the new version.
+
+**You never visit a website or download anything manually!**
 
 ## For Developers (You!)
 
