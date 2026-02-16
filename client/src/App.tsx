@@ -12,10 +12,10 @@ function App() {
   return (
     <div className="h-screen bg-discord-darkest dark">
       <Routes>
+        <Route path="/auth/action" element={<FirebaseAction />} />
         <Route path="/login" element={!token ? <Login /> : <Navigate to="/" />} />
         <Route path="/register" element={!token ? <Register /> : <Navigate to="/" />} />
         <Route path="/forgot-password" element={!token ? <ForgotPassword /> : <Navigate to="/" />} />
-        <Route path="/auth/action" element={<FirebaseAction />} />
         <Route path="/*" element={token ? <Home /> : <Navigate to="/login" />} />
       </Routes>
     </div>

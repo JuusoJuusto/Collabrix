@@ -31,7 +31,9 @@
         }
       ],
       "icon": "icon.ico",
-      "artifactName": "${productName}-Setup-${version}.${ext}"
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "sign": null,
+      "signingHashAlgorithms": []
     },
     "nsis": {
       "oneClick": false,

@@ -19,11 +19,17 @@ if not exist "icon.png" (
     exit /b 1
 )
 
+echo Cleaning old build cache...
+if exist "dist" rmdir /s /q "dist"
+if exist "%LOCALAPPDATA%\electron-builder\Cache\winCodeSign" rmdir /s /q "%LOCALAPPDATA%\electron-builder\Cache\winCodeSign"
+
+echo.
 echo Installing dependencies...
 call npm install
 
 echo.
-echo Building Windows installer...
+echo Building Windows installer (this may take 2-3 minutes)...
+set CSC_IDENTITY_AUTO_DISCOVERY=false
 call npm run build:win
 
 echo.
@@ -41,7 +47,11 @@ if exist "dist\Collabrix-Setup-*.exe" (
     echo ========================================
     echo BUILD FAILED!
     echo ========================================
-    echo Check the error messages above
+    echo.
+    echo Try running this script as Administrator:
+    echo Right-click build-windows.bat and select "Run as administrator"
+    echo.
+    echo Or use build-portable.bat instead (no admin needed)
 )
 
 echo.
