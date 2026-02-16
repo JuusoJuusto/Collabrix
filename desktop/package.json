@@ -21,7 +21,8 @@
       "preload.js",
       "titlebar.html",
       "icon.png",
-      "icon.ico"
+      "icon.ico",
+      "node_modules/electron-updater/**/*"
     ],
     "win": {
       "target": [
@@ -77,9 +78,11 @@
   ],
   "author": "StudiOWL",
   "license": "MIT",
+  "dependencies": {
+    "electron-updater": "^6.1.7"
+  },
   "devDependencies": {
     "electron": "^28.0.0",
-    "electron-builder": "^24.9.1",
-    "electron-updater": "^6.1.7"
+    "electron-builder": "^24.9.1"
   }
 }
