@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "build": "electron-builder",
-    "build:win": "electron-builder --win --x64",
+    "build:win": "electron-builder --win --x64 --config.win.sign=null",
     "build:mac": "electron-builder --mac",
     "build:linux": "electron-builder --linux"
   },
@@ -31,9 +31,7 @@
         }
       ],
       "icon": "icon.ico",
-      "artifactName": "${productName}-Setup-${version}.${ext}",
-      "sign": null,
-      "signingHashAlgorithms": []
+      "artifactName": "${productName}-Setup-${version}.${ext}"
     },
     "nsis": {
       "oneClick": false,
@@ -46,7 +44,10 @@
       "uninstallerIcon": "icon.ico",
       "installerHeaderIcon": "icon.ico",
       "deleteAppDataOnUninstall": false,
-      "menuCategory": true
+      "menuCategory": true,
+      "runAfterFinish": true,
+      "perMachine": true,
+      "packElevateHelper": false
     },
     "mac": {
       "target": "dmg",

@@ -1,0 +1,59 @@
+HOW TO BUILD THE INSTALLER
+==========================
+
+EASIEST METHOD - Just double-click this file:
+---------------------------------------------
+
+>>> BUILD-INSTALLER-ADMIN.bat <<<
+
+That's it! It will:
+1. Ask for admin privileges (click Yes)
+2. Clean old builds
+3. Install dependencies
+4. Build the installer
+5. Show you where it is
+
+The installer will be in: dist\Collabrix-Setup-1.0.0.exe
+
+
+IF THAT DOESN'T WORK:
+----------------------
+
+The installer build requires admin privileges because electron-builder
+downloads code signing tools that have symbolic links.
+
+Windows needs admin rights to create symbolic links.
+
+ALTERNATIVE: Use the portable version (already built!)
+Location: dist\win-unpacked\Collabrix.exe
+
+The portable version:
+- Works perfectly
+- No installation needed
+- Can be copied anywhere
+- Runs immediately
+
+Just copy the "win-unpacked" folder and share it!
+
+
+TROUBLESHOOTING:
+----------------
+
+Q: BUILD-INSTALLER-ADMIN.bat doesn't ask for admin?
+A: Right-click it and select "Run as administrator"
+
+Q: Still getting symbolic link errors?
+A: Use the portable version instead (dist\win-unpacked\Collabrix.exe)
+
+Q: Want a real installer without admin hassles?
+A: Use create-installer-from-portable.bat (requires NSIS)
+
+
+SUMMARY:
+--------
+
+1. EASIEST: Double-click BUILD-INSTALLER-ADMIN.bat
+2. ALTERNATIVE: Use portable version (already works!)
+3. MANUAL: Right-click BUILD-INSTALLER-ADMIN.bat > Run as administrator
+
+The portable version is already built and ready to use!
