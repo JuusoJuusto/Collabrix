@@ -81,14 +81,14 @@
       position: fixed;
       top: 40px;
       right: 10px;
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: 2px solid #8b5cf6;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4);
       z-index: 999998;
-      min-width: 320px;
-      animation: slideIn 0.3s ease-out;
+      min-width: 360px;
+      animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
     
     @keyframes slideIn {
@@ -124,14 +124,16 @@
     
     #update-title {
       color: white;
-      font-weight: 600;
-      font-size: 14px;
-      margin-bottom: 4px;
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 6px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
     
     #update-message {
-      color: #94a3b8;
-      font-size: 12px;
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 13px;
+      font-weight: 500;
     }
     
     #update-actions {
@@ -150,23 +152,29 @@
     }
     
     .update-btn.primary {
-      background: #5865F2;
-      color: white;
+      background: white;
+      color: #667eea;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
     }
     
     .update-btn.primary:hover {
-      background: #4752C4;
+      background: #f0f0f0;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 255, 255, 0.4);
     }
     
     .update-btn:not(.primary) {
-      background: transparent;
-      color: #94a3b8;
-      border: 1px solid #334155;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      font-weight: 500;
     }
     
     .update-btn:not(.primary):hover {
-      background: #334155;
+      background: rgba(255, 255, 255, 0.2);
       color: white;
+      border-color: rgba(255, 255, 255, 0.5);
     }
   </style>
 </head>
@@ -256,9 +264,10 @@
       
       window.electronAPI.onUpdateDownloaded((info) => {
         document.getElementById('update-icon').textContent = '✅';
-        document.getElementById('update-title').textContent = 'Update Ready';
-        document.getElementById('update-message').textContent = 'Restart to install';
-        document.getElementById('update-download').textContent = 'Restart Now';
+        document.getElementById('update-icon').classList.add('ready');
+        document.getElementById('update-title').textContent = 'Update Ready!';
+        document.getElementById('update-message').textContent = 'Restart to install v' + info.version;
+        document.getElementById('update-download').textContent = '🚀 Restart Now';
         document.getElementById('update-download').disabled = false;
         document.getElementById('update-download').onclick = () => {
           window.electronAPI.installUpdate();
