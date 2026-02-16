@@ -1,0 +1,64 @@
+COLLABRIX DESKTOP APP - BUILD INSTRUCTIONS
+==========================================
+
+STEP 1: ADD ICON FILES
+-----------------------
+You need TWO icon files in this folder:
+- icon.ico (Windows icon)
+- icon.png (PNG icon)
+
+See CREATE_ICON.txt for how to create them.
+
+STEP 2: CHOOSE BUILD TYPE
+--------------------------
+
+OPTION A - PORTABLE VERSION (RECOMMENDED - NO ADMIN NEEDED)
+  1. Double-click: build-portable.bat
+  2. Wait 2-3 minutes
+  3. Find app in: dist\win-unpacked\Collabrix.exe
+  4. Copy the whole "win-unpacked" folder anywhere
+  5. Run Collabrix.exe - no installation needed!
+
+OPTION B - INSTALLER VERSION (REQUIRES ADMIN)
+  1. Right-click: build-windows.bat
+  2. Select "Run as administrator"
+  3. Wait 2-3 minutes
+  4. Find installer in: dist\Collabrix-Setup-1.0.0.exe
+  5. Run installer to install to Program Files
+
+TROUBLESHOOTING
+---------------
+
+ERROR: "Cannot create symbolic link"
+SOLUTION: Use build-portable.bat instead (no admin needed)
+
+ERROR: "icon.ico not found"
+SOLUTION: Add icon files first (see CREATE_ICON.txt)
+
+ERROR: "electron-builder not found"
+SOLUTION: Run "npm install" first
+
+BUILD TAKES FOREVER
+SOLUTION: First build takes 3-5 minutes (downloads dependencies)
+          Later builds are faster (1-2 minutes)
+
+WHICH VERSION SHOULD I USE?
+----------------------------
+
+PORTABLE:
+  ✅ No admin rights needed
+  ✅ Faster to build
+  ✅ Can run from USB drive
+  ✅ No installation needed
+  ❌ No Start Menu entry
+  ❌ No desktop shortcut
+
+INSTALLER:
+  ✅ Professional installation
+  ✅ Start Menu entry
+  ✅ Desktop shortcut
+  ✅ Shows in Windows Apps
+  ❌ Requires admin rights
+  ❌ Slower to build
+
+RECOMMENDATION: Start with portable version to test, then build installer for distribution.
