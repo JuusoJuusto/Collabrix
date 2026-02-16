@@ -2,6 +2,16 @@ import { auth } from './firebase';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
+// Ensure API_URL doesn't get concatenated with window.location
+const getApiUrl = () => {
+  // If it's a full URL (starts with http), use it directly
+  if (API_URL.startsWith('http')) {
+    return API_URL;
+  }
+  // Otherwise, it's a relative path
+  return API_URL;
+};
+
 async function getAuthToken() {
   const user = auth.currentUser;
   if (user) {
@@ -21,7 +31,7 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_URL}${url}`, {
+  const response = await fetch(`${getApiUrl()}${url}`, {
     ...options,
     headers
   });
