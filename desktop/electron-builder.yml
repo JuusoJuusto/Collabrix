@@ -1,0 +1,40 @@
+appId: com.studiowl.collabrix
+productName: Collabrix
+directories:
+  output: dist
+files:
+  - main.js
+  - preload.js
+  - titlebar.html
+  - icon.png
+  - icon.ico
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: icon.ico
+  artifactName: ${productName}-Setup-${version}.${ext}
+  publisherName: StudiOWL
+  sign: null
+  signingHashAlgorithms: []
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  allowElevation: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Collabrix
+  installerIcon: icon.ico
+  uninstallerIcon: icon.ico
+  installerHeaderIcon: icon.ico
+  deleteAppDataOnUninstall: false
+  menuCategory: true
+  runAfterFinish: true
+  perMachine: true
+  packElevateHelper: false
+  differentialPackage: true
+publish:
+  provider: github
+  owner: JuusoJuusto
+  repo: Collabrix
