@@ -99,10 +99,11 @@ function createWindow() {
 app.whenReady().then(() => {
   createWindow();
   
-  // Check for updates after 3 seconds
+  // Check for updates after 5 seconds (give more time)
   setTimeout(() => {
+    console.log('⏰ Starting update check...');
     checkForUpdates();
-  }, 3000);
+  }, 5000);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -147,14 +148,24 @@ function checkForUpdates() {
     return;
   }
   
+  console.log('🔍 Checking for updates...');
+  console.log('Current version:', app.getVersion());
+  console.log('Checking GitHub: JuusoJuusto/Collabrix');
+  
   autoUpdater.checkForUpdates().catch(err => {
-    console.log('Update check failed:', err);
+    console.log('❌ Update check failed:', err);
   });
 }
 
 // Auto-updater events
+autoUpdater.on('checking-for-update', () => {
+  console.log('🔍 Checking for update...');
+});
+
 autoUpdater.on('update-available', (info) => {
-  console.log('Update available:', info.version);
+  console.log('✅ Update available:', info.version);
+  console.log('Release date:', info.releaseDate);
+  console.log('Download URL:', info.files);
   
   if (mainWindow) {
     mainWindow.webContents.send('update-available', {
@@ -164,8 +175,9 @@ autoUpdater.on('update-available', (info) => {
   }
 });
 
-autoUpdater.on('update-not-available', () => {
-  console.log('App is up to date');
+autoUpdater.on('update-not-available', (info) => {
+  console.log('ℹ️ App is up to date');
+  console.log('Current version:', info.version);
 });
 
 autoUpdater.on('download-progress', (progress) => {
@@ -191,7 +203,9 @@ autoUpdater.on('update-downloaded', (info) => {
 });
 
 autoUpdater.on('error', (err) => {
-  console.log('Update error:', err);
+  console.log('❌ Update error:', err);
+  console.log('Error details:', err.message);
+  console.log('Error stack:', err.stack);
 });
 
 // IPC handlers for updates

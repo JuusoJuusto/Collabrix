@@ -185,6 +185,9 @@
         <path d="M256 48c-79.5 0-144 64.5-144 144 0 27.9 7.9 53.9 21.6 76.1-8.2 24.1-21.6 52.3-21.6 76.9 0 44.2 35.8 80 80 80 17.7 0 34-5.8 47.2-15.6 11.4 1 23.1 1.6 35.2 1.6s23.8-.6 35.2-1.6c13.2 9.8 29.5 15.6 47.2 15.6 44.2 0 80-35.8 80-80 0-24.6-13.4-52.8-21.6-76.9 13.7-22.2 21.6-48.2 21.6-76.1 0-79.5-64.5-144-144-144zm-64 240c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm128 0c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z"/>
       </svg>
       <span style="margin-left: 8px; font-weight: 600;">Collabrix</span>
+      <button id="check-updates" style="margin-left: 12px; padding: 4px 12px; background: rgba(88, 101, 242, 0.2); border: 1px solid #5865F2; border-radius: 4px; color: #5865F2; font-size: 11px; cursor: pointer; font-weight: 600;" title="Check for updates">
+        🔄 Check Updates
+      </button>
     </div>
     <div id="titlebar-controls">
       <button class="titlebar-button" id="minimize" title="Minimize">
@@ -235,6 +238,15 @@
     
     document.getElementById('close').addEventListener('click', () => {
       window.electronAPI.closeWindow();
+    });
+    
+    document.getElementById('check-updates').addEventListener('click', () => {
+      console.log('Manual update check triggered');
+      window.electronAPI.checkForUpdates();
+      document.getElementById('check-updates').textContent = '⏳ Checking...';
+      setTimeout(() => {
+        document.getElementById('check-updates').textContent = '🔄 Check Updates';
+      }, 3000);
     });
     
     // Update notification handlers
