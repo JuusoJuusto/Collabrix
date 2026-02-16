@@ -1,0 +1,87 @@
+COLLABRIX DESKTOP - QUICK START
+================================
+
+GOOD NEWS: Your app is already built!
+--------------------------------------
+
+The portable version is ready in:
+  dist\win-unpacked\Collabrix.exe
+
+You can run it right now by double-clicking that file!
+
+
+OPTION 1: USE PORTABLE VERSION (EASIEST)
+-----------------------------------------
+
+1. Go to: dist\win-unpacked\
+2. Double-click: Collabrix.exe
+3. The app will open!
+
+To distribute:
+  - Copy the entire "win-unpacked" folder
+  - Share it with others
+  - They just run Collabrix.exe
+
+
+OPTION 2: CREATE INSTALLER (REQUIRES ADMIN)
+--------------------------------------------
+
+The installer build failed because Windows needs admin rights
+to extract code signing tools.
+
+To fix:
+  1. Right-click: build-windows.bat
+  2. Select: "Run as administrator"
+  3. Click "Yes" on the UAC prompt
+  4. Wait 2-3 minutes
+  5. Installer will be in: dist\Collabrix-Setup-1.0.0.exe
+
+
+WHY DID IT FAIL?
+----------------
+
+Error: "Cannot create symbolic link: A required privilege is not held"
+
+This happens because:
+- electron-builder downloads code signing tools
+- These tools have symbolic links (Mac/Linux files)
+- Windows needs admin rights to create symbolic links
+- The portable build works fine without these tools
+
+
+WHICH VERSION SHOULD I USE?
+----------------------------
+
+PORTABLE (Already built!):
+  ✅ Works right now
+  ✅ No admin needed
+  ✅ Easy to distribute
+  ✅ Can run from USB
+  ❌ No Start Menu entry
+  ❌ No desktop shortcut
+
+INSTALLER (Needs admin):
+  ✅ Professional installation
+  ✅ Start Menu entry
+  ✅ Desktop shortcut
+  ✅ Uninstaller
+  ❌ Requires admin to build
+  ❌ Requires admin to install
+
+
+RECOMMENDATION
+--------------
+
+Use the portable version! It's already built and works great.
+
+Location: dist\win-unpacked\Collabrix.exe
+
+Just run it and enjoy!
+
+
+NEED HELP?
+----------
+
+The app is working in: dist\win-unpacked\Collabrix.exe
+
+Try it now!
