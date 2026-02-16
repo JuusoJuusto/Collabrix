@@ -11,6 +11,7 @@ import ChannelList from '../components/ChannelList';
 import ChatArea from '../components/ChatArea';
 import MemberList from '../components/MemberList';
 import FriendsList from '../components/FriendsList';
+import VoiceChat from '../components/VoiceChat';
 import { Cog6ToothIcon, ArrowRightOnRectangleIcon, UserCircleIcon, UserGroupIcon } from '@heroicons/react/24/solid';
 
 export default function Home() {
@@ -301,6 +302,9 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Voice Chat */}
+      <VoiceChat />
     </div>
   );
 }

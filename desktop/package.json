@@ -1,6 +1,6 @@
 {
   "name": "collabrix-desktop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Collabrix Desktop - Discord-style platform for gamers",
   "main": "main.js",
   "scripts": {
