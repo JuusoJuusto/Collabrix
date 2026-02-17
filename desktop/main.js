@@ -7,6 +7,15 @@ let mainWindow;
 // Configure auto-updater
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
+autoUpdater.logger = console;
+
+// Force check on startup
+app.on('ready', () => {
+  setTimeout(() => {
+    console.log('🚀 Auto-checking for updates on startup...');
+    checkForUpdates();
+  }, 3000);
+});
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -98,12 +107,6 @@ function createWindow() {
 // App lifecycle
 app.whenReady().then(() => {
   createWindow();
-  
-  // Check for updates after 5 seconds (give more time)
-  setTimeout(() => {
-    console.log('⏰ Starting update check...');
-    checkForUpdates();
-  }, 5000);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -143,18 +146,17 @@ ipcMain.handle('close-window', () => {
 
 // Auto-updater functions
 function checkForUpdates() {
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Skipping update check in development');
-    return;
-  }
+  console.log('🔍 CHECKING FOR UPDATES...');
+  console.log('📦 Current version:', app.getVersion());
+  console.log('🌐 Checking: https://github.com/JuusoJuusto/Collabrix/releases');
   
-  console.log('🔍 Checking for updates...');
-  console.log('Current version:', app.getVersion());
-  console.log('Checking GitHub: JuusoJuusto/Collabrix');
-  
-  autoUpdater.checkForUpdates().catch(err => {
-    console.log('❌ Update check failed:', err);
-  });
+  autoUpdater.checkForUpdates()
+    .then(result => {
+      console.log('✅ Update check completed:', result);
+    })
+    .catch(err => {
+      console.error('❌ Update check error:', err.message);
+    });
 }
 
 // Auto-updater events
