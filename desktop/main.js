@@ -19,10 +19,10 @@ app.on('ready', () => {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 800,
-    minWidth: 800,
-    minHeight: 600,
+    width: 1400,
+    height: 900,
+    minWidth: 1000,
+    minHeight: 700,
     icon: path.join(__dirname, 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -38,7 +38,8 @@ function createWindow() {
     show: true,
     frame: false,
     titleBarStyle: 'hidden',
-    autoHideMenuBar: true
+    autoHideMenuBar: true,
+    title: 'Collabrix - Connect, Chat, Collaborate'
   });
 
   // Load the custom titlebar with embedded web app

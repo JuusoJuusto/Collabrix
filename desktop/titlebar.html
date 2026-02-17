@@ -18,15 +18,16 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 32px;
-      background: #0f172a;
+      height: 40px;
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 10px;
+      padding: 0 16px;
       -webkit-app-region: drag;
       z-index: 999999;
-      border-bottom: 1px solid #1e293b;
+      border-bottom: 2px solid #5865F2;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
     
     #titlebar-title {
@@ -44,8 +45,8 @@
     }
     
     .titlebar-button {
-      width: 46px;
-      height: 32px;
+      width: 48px;
+      height: 40px;
       border: none;
       background: transparent;
       color: #94a3b8;
@@ -53,11 +54,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.2s;
+      transition: all 0.2s;
+      font-size: 14px;
     }
     
     .titlebar-button:hover {
       background: rgba(255, 255, 255, 0.1);
+      color: white;
     }
     
     .titlebar-button.close:hover {
@@ -65,9 +68,14 @@
       color: white;
     }
     
+    #check-updates:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(88, 101, 242, 0.6);
+    }
+    
     #app-content {
-      margin-top: 32px;
-      height: calc(100vh - 32px);
+      margin-top: 40px;
+      height: calc(100vh - 40px);
       width: 100vw;
     }
     
@@ -181,11 +189,12 @@
 <body>
   <div id="titlebar">
     <div id="titlebar-title">
-      <svg width="24" height="24" viewBox="0 0 512 512" fill="#5865F2" style="filter: drop-shadow(0 0 2px rgba(88, 101, 242, 0.5));">
+    <div id="titlebar-title">
+      <svg width="32" height="32" viewBox="0 0 512 512" fill="#5865F2" style="filter: drop-shadow(0 0 4px rgba(88, 101, 242, 0.8));">
         <path d="M256 48c-79.5 0-144 64.5-144 144 0 27.9 7.9 53.9 21.6 76.1-8.2 24.1-21.6 52.3-21.6 76.9 0 44.2 35.8 80 80 80 17.7 0 34-5.8 47.2-15.6 11.4 1 23.1 1.6 35.2 1.6s23.8-.6 35.2-1.6c13.2 9.8 29.5 15.6 47.2 15.6 44.2 0 80-35.8 80-80 0-24.6-13.4-52.8-21.6-76.9 13.7-22.2 21.6-48.2 21.6-76.1 0-79.5-64.5-144-144-144zm-64 240c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm128 0c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z"/>
       </svg>
-      <span style="margin-left: 8px; font-weight: 600;">Collabrix</span>
-      <button id="check-updates" style="margin-left: 12px; padding: 4px 12px; background: rgba(88, 101, 242, 0.2); border: 1px solid #5865F2; border-radius: 4px; color: #5865F2; font-size: 11px; cursor: pointer; font-weight: 600;" title="Check for updates">
+      <span style="margin-left: 12px; font-weight: 700; font-size: 16px; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Collabrix</span>
+      <button id="check-updates" style="margin-left: 16px; padding: 6px 16px; background: linear-gradient(135deg, #5865F2 0%, #7289DA 100%); border: none; border-radius: 6px; color: white; font-size: 12px; cursor: pointer; font-weight: 700; box-shadow: 0 2px 8px rgba(88, 101, 242, 0.4); transition: all 0.2s;" title="Check for updates">
         🔄 Check Updates
       </button>
     </div>
