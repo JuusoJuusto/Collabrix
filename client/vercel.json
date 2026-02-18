@@ -4,5 +4,9 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ]
+  ],
+  "env": {
+    "VITE_API_URL": "https://echochat-production.up.railway.app/api",
+    "VITE_WS_URL": "https://echochat-production.up.railway.app"
+  }
 }

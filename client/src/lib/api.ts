@@ -1,14 +1,13 @@
 import { auth } from './firebase';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// Force the API URL to be absolute
+const API_URL = import.meta.env.VITE_API_URL || 'https://echochat-production.up.railway.app/api';
 
-// Ensure API_URL doesn't get concatenated with window.location
+console.log('🔧 API_URL configured:', API_URL);
+
+// Ensure API_URL is always absolute
 const getApiUrl = () => {
-  // If it's a full URL (starts with http), use it directly
-  if (API_URL.startsWith('http')) {
-    return API_URL;
-  }
-  // Otherwise, it's a relative path
+  // Always return the full URL
   return API_URL;
 };
 
@@ -31,7 +30,10 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${getApiUrl()}${url}`, {
+  const fullUrl = `${getApiUrl()}${url}`;
+  console.log('🌐 API Request:', fullUrl);
+
+  const response = await fetch(fullUrl, {
     ...options,
     headers
   });
