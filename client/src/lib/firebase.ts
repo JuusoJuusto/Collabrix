@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore, CACHE_SIZE_UNLIMITED, enableIndexedDbPersistence } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -23,7 +23,20 @@ setPersistence(auth, browserLocalPersistence).catch((error) => {
   console.warn('Failed to set persistence:', error);
 });
 
-export const db = getFirestore(app);
+// Initialize Firestore with unlimited cache for faster loading
+export const db = initializeFirestore(app, {
+  cacheSizeBytes: CACHE_SIZE_UNLIMITED
+});
+
+// Enable offline persistence for instant loading
+enableIndexedDbPersistence(db).catch((err) => {
+  if (err.code === 'failed-precondition') {
+    console.warn('Multiple tabs open, persistence can only be enabled in one tab.');
+  } else if (err.code === 'unimplemented') {
+    console.warn('Browser does not support offline persistence');
+  }
+});
+
 export const storage = getStorage(app);
 
 export default app;

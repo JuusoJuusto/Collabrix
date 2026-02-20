@@ -4,6 +4,13 @@ import { collection, addDoc, getDocs, query, where, orderBy, doc, setDoc, getDoc
 // Use Firebase directly instead of Railway API
 const useFirebaseDirectly = true;
 
+// Cache for faster loading
+const cache = {
+  servers: null as any,
+  lastFetch: 0,
+  cacheDuration: 30000 // 30 seconds
+};
+
 async function getAuthToken() {
   const user = auth.currentUser;
   if (user) {
@@ -17,48 +24,39 @@ export const serverAPI = {
   getAll: async () => {
     if (!useFirebaseDirectly) return [];
     
-    // Wait for auth to be ready
-    await new Promise((resolve) => {
-      if (auth.currentUser) {
-        resolve(true);
-      } else {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-          if (user) {
-            unsubscribe();
-            resolve(true);
-          }
-        });
-        // Timeout after 5 seconds
-        setTimeout(() => {
-          unsubscribe();
-          resolve(false);
-        }, 5000);
-      }
-    });
-
     const user = auth.currentUser;
-    if (!user) return []; // Return empty array instead of throwing error
+    if (!user) return []; // Return immediately if not authenticated
+
+    // Return cached data if available and fresh
+    if (cache.servers && Date.now() - cache.lastFetch < cache.cacheDuration) {
+      return cache.servers;
+    }
 
     try {
       const serversRef = collection(db, 'servers');
       const snapshot = await getDocs(serversRef);
       
-      const servers = [];
-      for (const docSnap of snapshot.docs) {
-        const serverData = { id: docSnap.id, ...docSnap.data() };
-        
-        // Get channels
-        const channelsRef = collection(db, 'servers', docSnap.id, 'channels');
-        const channelsSnap = await getDocs(query(channelsRef, orderBy('position')));
-        const channels = channelsSnap.docs.map(c => ({ id: c.id, ...c.data() }));
-        
-        servers.push({ ...serverData, channels, members: [] });
-      }
+      const servers = await Promise.all(
+        snapshot.docs.map(async (docSnap) => {
+          const serverData = { id: docSnap.id, ...docSnap.data() };
+          
+          // Get channels in parallel
+          const channelsRef = collection(db, 'servers', docSnap.id, 'channels');
+          const channelsSnap = await getDocs(query(channelsRef, orderBy('position')));
+          const channels = channelsSnap.docs.map(c => ({ id: c.id, ...c.data() }));
+          
+          return { ...serverData, channels, members: [] };
+        })
+      );
+      
+      // Cache the results
+      cache.servers = servers;
+      cache.lastFetch = Date.now();
       
       return servers;
     } catch (error) {
       console.error('Error loading servers:', error);
-      return [];
+      return cache.servers || []; // Return cached data on error
     }
   },
 
@@ -78,24 +76,6 @@ export const serverAPI = {
   create: async (data: { name: string; description?: string; icon?: string }) => {
     if (!useFirebaseDirectly) throw new Error('Server creation requires Firebase');
     
-    // Wait for auth
-    await new Promise((resolve) => {
-      if (auth.currentUser) {
-        resolve(true);
-      } else {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-          if (user) {
-            unsubscribe();
-            resolve(true);
-          }
-        });
-        setTimeout(() => {
-          unsubscribe();
-          resolve(false);
-        }, 5000);
-      }
-    });
-
     const user = auth.currentUser;
     if (!user) throw new Error('Not authenticated');
 
@@ -112,35 +92,39 @@ export const serverAPI = {
       const serverRef = await addDoc(collection(db, 'servers'), serverData);
       const serverId = serverRef.id;
 
-      // Create default channels
-      const generalChannel = {
-        name: 'general',
-        type: 'TEXT',
-        serverId,
-        position: 0,
-        createdAt: new Date().toISOString()
-      };
-
-      const voiceChannel = {
-        name: 'General Voice',
-        type: 'VOICE',
-        serverId,
-        position: 1,
-        createdAt: new Date().toISOString()
-      };
-
+      // Create default channels in parallel
       const channelsRef = collection(db, 'servers', serverId, 'channels');
-      const generalRef = await addDoc(channelsRef, generalChannel);
-      const voiceRef = await addDoc(channelsRef, voiceChannel);
+      
+      const [generalRef, voiceRef] = await Promise.all([
+        addDoc(channelsRef, {
+          name: 'general',
+          type: 'TEXT',
+          serverId,
+          position: 0,
+          createdAt: new Date().toISOString()
+        }),
+        addDoc(channelsRef, {
+          name: 'General Voice',
+          type: 'VOICE',
+          serverId,
+          position: 1,
+          createdAt: new Date().toISOString()
+        })
+      ]);
 
-      return {
+      const newServer = {
         id: serverId,
         ...serverData,
         channels: [
-          { id: generalRef.id, ...generalChannel },
-          { id: voiceRef.id, ...voiceChannel }
+          { id: generalRef.id, name: 'general', type: 'TEXT', serverId, position: 0 },
+          { id: voiceRef.id, name: 'General Voice', type: 'VOICE', serverId, position: 1 }
         ]
       };
+
+      // Invalidate cache
+      cache.servers = null;
+
+      return newServer;
     } catch (error: any) {
       console.error('Error creating server:', error);
       throw new Error(error.message || 'Failed to create server');
@@ -160,10 +144,12 @@ export const serverAPI = {
       nickname: null
     });
 
+    cache.servers = null; // Invalidate cache
     return { message: 'Joined server' };
   },
 
   leave: async (id: string) => {
+    cache.servers = null; // Invalidate cache
     return { message: 'Left server' };
   }
 };

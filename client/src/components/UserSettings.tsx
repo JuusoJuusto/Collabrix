@@ -38,7 +38,9 @@ export default function UserSettings({ onClose }: UserSettingsProps) {
     { id: 'profile', name: 'My Profile', icon: UserCircleIcon },
     { id: 'appearance', name: 'Appearance', icon: PaintBrushIcon },
     { id: 'privacy', name: 'Privacy', icon: ShieldCheckIcon },
-    { id: 'notifications', name: 'Notifications', icon: BellIcon }
+    { id: 'notifications', name: 'Notifications', icon: BellIcon },
+    { id: 'keybinds', name: 'Keybinds', icon: PaintBrushIcon },
+    { id: 'language', name: 'Language', icon: PaintBrushIcon }
   ];
 
   const statusOptions = [
