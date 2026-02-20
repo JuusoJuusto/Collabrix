@@ -1,15 +1,12 @@
 import { auth } from './firebase';
 
-// Force the API URL to be absolute
-const API_URL = import.meta.env.VITE_API_URL || 'https://echochat-production.up.railway.app/api';
+// Force the API URL to be absolute with https
+const API_URL = 'https://echochat-production.up.railway.app/api';
 
 console.log('🔧 API_URL configured:', API_URL);
 
-// Ensure API_URL is always absolute
-const getApiUrl = () => {
-  // Always return the full URL
-  return API_URL;
-};
+// Always return the full URL
+const getApiUrl = () => API_URL;
 
 async function getAuthToken() {
   const user = auth.currentUser;

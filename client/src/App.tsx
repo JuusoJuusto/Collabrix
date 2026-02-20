@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -12,11 +13,12 @@ function App() {
   return (
     <div className="h-screen bg-discord-darkest dark">
       <Routes>
+        <Route path="/" element={!token ? <Landing /> : <Home />} />
         <Route path="/auth/action" element={<FirebaseAction />} />
         <Route path="/login" element={!token ? <Login /> : <Navigate to="/" />} />
         <Route path="/register" element={!token ? <Register /> : <Navigate to="/" />} />
         <Route path="/forgot-password" element={!token ? <ForgotPassword /> : <Navigate to="/" />} />
-        <Route path="/*" element={token ? <Home /> : <Navigate to="/login" />} />
+        <Route path="/app/*" element={token ? <Home /> : <Navigate to="/login" />} />
       </Routes>
     </div>
   );
