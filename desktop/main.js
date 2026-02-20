@@ -7,7 +7,6 @@ let mainWindow;
 // Configure auto-updater
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
-autoUpdater.logger = console;
 autoUpdater.allowPrerelease = false;
 autoUpdater.allowDowngrade = false;
 
@@ -21,9 +20,8 @@ autoUpdater.setFeedURL({
 // Check immediately on startup
 app.on('ready', () => {
   setTimeout(() => {
-    console.log('🚀 Checking for updates...');
     checkForUpdates();
-  }, 1000); // Reduced from 3000ms to 1000ms
+  }, 1000);
 });
 
 function createWindow() {
@@ -62,14 +60,8 @@ function createWindow() {
   // Load the custom titlebar with embedded web app
   mainWindow.loadFile(path.join(__dirname, 'titlebar.html'));
 
-  // Show loading message
-  mainWindow.webContents.on('did-start-loading', () => {
-    console.log('Loading Collabrix...');
-  });
-
   // Handle load errors
   mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
-    console.error('Failed to load:', errorDescription);
     mainWindow.loadURL(`data:text/html,
       <html>
         <body style="background: #0f172a; color: white; font-family: Arial; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
@@ -164,38 +156,23 @@ ipcMain.handle('close-window', () => {
 
 // Auto-updater functions
 function checkForUpdates() {
-  console.log('🔍 CHECKING FOR UPDATES...');
-  console.log('📦 Current version:', app.getVersion());
-  console.log('🌐 Feed URL:', 'https://github.com/JuusoJuusto/Collabrix/releases');
-  console.log('🔗 Checking GitHub releases...');
-  
   autoUpdater.checkForUpdates()
     .then(result => {
-      console.log('✅ Update check completed');
-      if (result) {
-        console.log('📋 Result:', JSON.stringify(result, null, 2));
-      }
+      // Update check completed
     })
     .catch(err => {
-      console.error('❌ Update check error:', err.message);
-      console.error('Stack:', err.stack);
+      // Update check error
     });
 }
 
 // Auto-updater events
 autoUpdater.on('checking-for-update', () => {
-  console.log('🔍 Checking for update...');
   if (mainWindow) {
     mainWindow.webContents.send('update-checking');
   }
 });
 
 autoUpdater.on('update-available', (info) => {
-  console.log('✅ UPDATE AVAILABLE!');
-  console.log('📦 New version:', info.version);
-  console.log('📅 Release date:', info.releaseDate);
-  console.log('📝 Release notes:', info.releaseNotes);
-  
   if (mainWindow) {
     mainWindow.webContents.send('update-available', {
       version: info.version,
@@ -205,16 +182,12 @@ autoUpdater.on('update-available', (info) => {
 });
 
 autoUpdater.on('update-not-available', (info) => {
-  console.log('ℹ️ App is up to date');
-  console.log('📦 Current version:', info.version);
   if (mainWindow) {
     mainWindow.webContents.send('update-not-available');
   }
 });
 
 autoUpdater.on('download-progress', (progress) => {
-  console.log(`Download progress: ${progress.percent}%`);
-  
   if (mainWindow) {
     mainWindow.webContents.send('update-download-progress', {
       percent: progress.percent,
@@ -225,9 +198,6 @@ autoUpdater.on('download-progress', (progress) => {
 });
 
 autoUpdater.on('update-downloaded', (info) => {
-  console.log('✅ Update downloaded:', info.version);
-  console.log('🔄 Restarting app to install update...');
-  
   if (mainWindow) {
     mainWindow.webContents.send('update-downloaded', {
       version: info.version
@@ -241,9 +211,7 @@ autoUpdater.on('update-downloaded', (info) => {
 });
 
 autoUpdater.on('error', (err) => {
-  console.log('❌ Update error:', err);
-  console.log('Error details:', err.message);
-  console.log('Error stack:', err.stack);
+  // Update error occurred
 });
 
 // IPC handlers for updates

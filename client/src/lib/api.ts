@@ -55,7 +55,6 @@ export const serverAPI = {
       
       return servers;
     } catch (error) {
-      console.error('Error loading servers:', error);
       return cache.servers || []; // Return cached data on error
     }
   },
@@ -118,7 +117,8 @@ export const serverAPI = {
         channels: [
           { id: generalRef.id, name: 'general', type: 'TEXT', serverId, position: 0 },
           { id: voiceRef.id, name: 'General Voice', type: 'VOICE', serverId, position: 1 }
-        ]
+        ],
+        members: []
       };
 
       // Invalidate cache
@@ -126,7 +126,6 @@ export const serverAPI = {
 
       return newServer;
     } catch (error: any) {
-      console.error('Error creating server:', error);
       throw new Error(error.message || 'Failed to create server');
     }
   },

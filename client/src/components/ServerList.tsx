@@ -56,7 +56,6 @@ export default function ServerList() {
         setServers(updatedServers);
         setCurrentServer(realServer);
       }).catch((error: any) => {
-        console.error('Background server creation failed:', error);
         // Remove temp server on error
         const filteredServers = servers.filter(s => s.id !== tempId);
         setServers(filteredServers);

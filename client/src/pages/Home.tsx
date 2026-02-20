@@ -32,7 +32,7 @@ export default function Home() {
           const newToken = await firebaseUser.getIdToken();
           setToken(newToken);
         } catch (err) {
-          console.error('Failed to get token:', err);
+          // Token fetch failed
         }
       } else {
         navigate('/login');
@@ -61,7 +61,7 @@ export default function Home() {
     });
 
     socket.on('user:status', ({ userId, status }) => {
-      console.log(`User ${userId} is now ${status}`);
+      // User status updated
     });
 
     loadServers();
@@ -77,7 +77,6 @@ export default function Home() {
       setServers(data);
       setError('');
     } catch (error: any) {
-      console.error('Failed to load servers:', error);
       // Don't show error if it's just a connection issue - user can still create servers
       if (!error.message?.includes('Failed to fetch')) {
         setError('Server connection issue. You can still create servers locally.');
@@ -92,7 +91,7 @@ export default function Home() {
       socketClient.disconnect();
       navigate('/login');
     } catch (err) {
-      console.error('Logout error:', err);
+      // Logout error
     }
   };
 
