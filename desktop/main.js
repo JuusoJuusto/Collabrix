@@ -8,13 +8,22 @@ let mainWindow;
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
 autoUpdater.logger = console;
+autoUpdater.allowPrerelease = false;
+autoUpdater.allowDowngrade = false;
 
-// Force check on startup
+// Configure update feed URL
+autoUpdater.setFeedURL({
+  provider: 'github',
+  owner: 'JuusoJuusto',
+  repo: 'Collabrix'
+});
+
+// Check immediately on startup
 app.on('ready', () => {
   setTimeout(() => {
-    console.log('🚀 Auto-checking for updates on startup...');
+    console.log('🚀 Checking for updates...');
     checkForUpdates();
-  }, 3000);
+  }, 1000); // Reduced from 3000ms to 1000ms
 });
 
 function createWindow() {
@@ -149,26 +158,35 @@ ipcMain.handle('close-window', () => {
 function checkForUpdates() {
   console.log('🔍 CHECKING FOR UPDATES...');
   console.log('📦 Current version:', app.getVersion());
-  console.log('🌐 Checking: https://github.com/JuusoJuusto/Collabrix/releases');
+  console.log('🌐 Feed URL:', 'https://github.com/JuusoJuusto/Collabrix/releases');
+  console.log('🔗 Checking GitHub releases...');
   
   autoUpdater.checkForUpdates()
     .then(result => {
-      console.log('✅ Update check completed:', result);
+      console.log('✅ Update check completed');
+      if (result) {
+        console.log('📋 Result:', JSON.stringify(result, null, 2));
+      }
     })
     .catch(err => {
       console.error('❌ Update check error:', err.message);
+      console.error('Stack:', err.stack);
     });
 }
 
 // Auto-updater events
 autoUpdater.on('checking-for-update', () => {
   console.log('🔍 Checking for update...');
+  if (mainWindow) {
+    mainWindow.webContents.send('update-checking');
+  }
 });
 
 autoUpdater.on('update-available', (info) => {
-  console.log('✅ Update available:', info.version);
-  console.log('Release date:', info.releaseDate);
-  console.log('Download URL:', info.files);
+  console.log('✅ UPDATE AVAILABLE!');
+  console.log('📦 New version:', info.version);
+  console.log('📅 Release date:', info.releaseDate);
+  console.log('📝 Release notes:', info.releaseNotes);
   
   if (mainWindow) {
     mainWindow.webContents.send('update-available', {
@@ -180,7 +198,10 @@ autoUpdater.on('update-available', (info) => {
 
 autoUpdater.on('update-not-available', (info) => {
   console.log('ℹ️ App is up to date');
-  console.log('Current version:', info.version);
+  console.log('📦 Current version:', info.version);
+  if (mainWindow) {
+    mainWindow.webContents.send('update-not-available');
+  }
 });
 
 autoUpdater.on('download-progress', (progress) => {
@@ -196,13 +217,19 @@ autoUpdater.on('download-progress', (progress) => {
 });
 
 autoUpdater.on('update-downloaded', (info) => {
-  console.log('Update downloaded:', info.version);
+  console.log('✅ Update downloaded:', info.version);
+  console.log('🔄 Restarting app to install update...');
   
   if (mainWindow) {
     mainWindow.webContents.send('update-downloaded', {
       version: info.version
     });
   }
+  
+  // Auto-restart after 2 seconds
+  setTimeout(() => {
+    autoUpdater.quitAndInstall(false, true);
+  }, 2000);
 });
 
 autoUpdater.on('error', (err) => {

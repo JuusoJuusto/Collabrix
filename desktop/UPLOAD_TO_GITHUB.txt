@@ -1,0 +1,61 @@
+═══════════════════════════════════════════════════════════════
+  UPLOAD v2.0.3 TO GITHUB - QUICK INSTRUCTIONS
+═══════════════════════════════════════════════════════════════
+
+📁 FILES TO UPLOAD (in dist folder):
+   ✅ Collabrix-Setup-2.0.3.exe
+   ✅ latest.yml
+
+🌐 UPLOAD URL:
+   https://github.com/JuusoJuusto/Collabrix/releases/new
+
+📝 RELEASE DETAILS:
+   Tag: v2.0.3
+   Title: Collabrix v2.0.3 - Enhanced Auto-Update
+   Description:
+   
+   ## What's New in v2.0.3
+   - ✅ Fixed auto-updater feed URL configuration
+   - ✅ Enhanced update check logging  
+   - ✅ Improved "Check Updates" button functionality
+   - ✅ Better error handling for update checks
+   - ✅ Owl logo displayed prominently (32x32)
+   - ✅ Gradient titlebar with better styling
+   
+   ## How to Update
+   - Automatic: App checks for updates on startup
+   - Manual: Click "🔄 Check Updates" button in titlebar
+   
+   ## Installation
+   1. Download Collabrix-Setup-2.0.3.exe
+   2. Run the installer
+   3. Follow the setup wizard
+   4. Launch Collabrix and enjoy!
+
+═══════════════════════════════════════════════════════════════
+
+⚠️ IMPORTANT:
+   - Upload BOTH files (exe and yml)
+   - Make sure release is PUBLISHED (not draft)
+   - Tag must be exactly: v2.0.3
+
+═══════════════════════════════════════════════════════════════
+
+🧪 TESTING THE UPDATE:
+
+   1. If you have v2.0.0 installed:
+      - Open the app
+      - Wait 3 seconds
+      - Update notification should appear
+      - Click "Download" then "Restart Now"
+   
+   2. If you don't have v2.0.0:
+      - Just install v2.0.3 directly
+      - Next update will test the system
+   
+   3. Check console (F12) for logs:
+      - Should see "🚀 Auto-checking for updates..."
+      - Should see "📍 Feed URL: ..."
+      - Should see update status
+
+═══════════════════════════════════════════════════════════════
