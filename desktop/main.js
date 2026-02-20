@@ -44,11 +44,19 @@ function createWindow() {
       nativeWindowOpen: true
     },
     backgroundColor: '#0f172a',
-    show: true,
+    show: false, // Don't show until ready
     frame: false,
     titleBarStyle: 'hidden',
     autoHideMenuBar: true,
     title: 'Collabrix - Connect, Chat, Collaborate'
+  });
+
+  // Maximize window on startup
+  mainWindow.maximize();
+  
+  // Show window when ready
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
   });
 
   // Load the custom titlebar with embedded web app

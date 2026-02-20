@@ -4,7 +4,7 @@ import { serverAPI } from '../lib/api';
 import { PlusIcon } from '@heroicons/react/24/solid';
 
 export default function ServerList() {
-  const { servers, currentServer, setCurrentServer, addServer } = useChatStore();
+  const { servers, currentServer, setCurrentServer, addServer, setServers } = useChatStore();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [serverName, setServerName] = useState('');
   const [serverDescription, setServerDescription] = useState('');
@@ -13,27 +13,64 @@ export default function ServerList() {
 
   const handleCreateServer = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!serverName.trim()) return;
+    
     setLoading(true);
     setError('');
     
     try {
-      const data = await serverAPI.create({ 
+      // Optimistic update - add server immediately to UI
+      const tempId = `temp-${Date.now()}`;
+      const optimisticServer = {
+        id: tempId,
         name: serverName,
-        description: serverDescription || undefined
-      });
-      addServer(data);
-      setCurrentServer(data);
+        description: serverDescription || null,
+        icon: null,
+        ownerId: 'temp',
+        channels: [
+          { id: 'temp-1', name: 'general', type: 'TEXT' as const, position: 0 },
+          { id: 'temp-2', name: 'General Voice', type: 'VOICE' as const, position: 1 }
+        ],
+        members: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      // Add to UI immediately
+      addServer(optimisticServer);
+      setCurrentServer(optimisticServer);
       setShowCreateModal(false);
       setServerName('');
       setServerDescription('');
+      setLoading(false);
+      
+      // Create in Firebase in background
+      serverAPI.create({ 
+        name: serverName,
+        description: serverDescription || undefined
+      }).then((realServer) => {
+        // Replace temp server with real one
+        const updatedServers = servers.map(s => 
+          s.id === tempId ? realServer : s
+        );
+        setServers(updatedServers);
+        setCurrentServer(realServer);
+      }).catch((error: any) => {
+        console.error('Background server creation failed:', error);
+        // Remove temp server on error
+        const filteredServers = servers.filter(s => s.id !== tempId);
+        setServers(filteredServers);
+        setCurrentServer(null);
+        setError(error.message || 'Failed to create server');
+      });
+      
     } catch (error: any) {
+      setLoading(false);
       if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
         setError('Cannot connect to server. Please check your internet connection.');
       } else {
         setError(error.message || 'Failed to create server. Please try again.');
       }
-    } finally {
-      setLoading(false);
     }
   };
 
