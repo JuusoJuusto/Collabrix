@@ -161,21 +161,21 @@ export const setupSocketHandlers = (io: Server) => {
     });
 
     // WebRTC signaling
-    socket.on('voice:offer', (data: { to: string; offer: RTCSessionDescriptionInit }) => {
+    socket.on('voice:offer', (data: { to: string; offer: any }) => {
       io.to(data.to).emit('voice:offer', {
         from: socket.id,
         offer: data.offer
       });
     });
 
-    socket.on('voice:answer', (data: { to: string; answer: RTCSessionDescriptionInit }) => {
+    socket.on('voice:answer', (data: { to: string; answer: any }) => {
       io.to(data.to).emit('voice:answer', {
         from: socket.id,
         answer: data.answer
       });
     });
 
-    socket.on('voice:ice-candidate', (data: { to: string; candidate: RTCIceCandidateInit }) => {
+    socket.on('voice:ice-candidate', (data: { to: string; candidate: any }) => {
       io.to(data.to).emit('voice:ice-candidate', {
         from: socket.id,
         candidate: data.candidate
