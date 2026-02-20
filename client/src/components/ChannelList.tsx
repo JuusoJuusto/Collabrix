@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { useChatStore } from '../store/chatStore';
 import { useAuthStore } from '../store/authStore';
-import { HashtagIcon, SpeakerWaveIcon } from '@heroicons/react/24/outline';
+import { HashtagIcon, SpeakerWaveIcon, Cog6ToothIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import ServerSettings from './ServerSettings';
 
 export default function ChannelList() {
   const { currentServer, currentChannel, setCurrentChannel } = useChatStore();
   const { logout } = useAuthStore();
+  const [showServerSettings, setShowServerSettings] = useState(false);
+  const [showServerMenu, setShowServerMenu] = useState(false);
 
   if (!currentServer) {
     return (
@@ -18,10 +22,49 @@ export default function ChannelList() {
   const voiceChannels = currentServer.channels.filter((c) => c.type === 'VOICE');
 
   return (
-    <div className="w-60 bg-discord-darker flex flex-col">
-      <div className="h-12 px-4 flex items-center shadow-md border-b border-discord-darkest">
-        <h2 className="font-semibold text-white truncate">{currentServer.name}</h2>
-      </div>
+    <>
+      <div className="w-60 bg-discord-darker flex flex-col">
+        <div className="h-12 px-4 flex items-center justify-between shadow-md border-b border-discord-darkest relative">
+          <h2 className="font-semibold text-white truncate flex-1">{currentServer.name}</h2>
+          <button
+            onClick={() => setShowServerMenu(!showServerMenu)}
+            className="p-1 text-gray-400 hover:text-white transition"
+          >
+            <ChevronDownIcon className="w-5 h-5" />
+          </button>
+
+          {/* Server Menu Dropdown */}
+          {showServerMenu && (
+            <div className="absolute top-full left-0 right-0 mt-1 mx-2 bg-slate-900 rounded-lg shadow-xl border border-slate-700 z-50">
+              <button
+                onClick={() => {
+                  setShowServerSettings(true);
+                  setShowServerMenu(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-300 hover:bg-slate-800 hover:text-white transition rounded-t-lg"
+              >
+                <Cog6ToothIcon className="w-5 h-5" />
+                <span className="text-sm font-medium">Server Settings</span>
+              </button>
+              <button
+                onClick={() => setShowServerMenu(false)}
+                className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-300 hover:bg-slate-800 hover:text-white transition"
+              >
+                <HashtagIcon className="w-5 h-5" />
+                <span className="text-sm font-medium">Create Channel</span>
+              </button>
+              <button
+                onClick={() => setShowServerMenu(false)}
+                className="w-full flex items-center gap-3 px-4 py-3 text-left text-red-400 hover:bg-red-500/10 hover:text-red-300 transition rounded-b-lg border-t border-slate-800"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span className="text-sm font-medium">Leave Server</span>
+              </button>
+            </div>
+          )}
+        </div>
 
       <div className="flex-1 overflow-y-auto p-2">
         {textChannels.length > 0 && (
@@ -88,5 +131,14 @@ export default function ChannelList() {
         </button>
       </div>
     </div>
+
+    {/* Server Settings Modal */}
+    {showServerSettings && (
+      <ServerSettings
+        server={currentServer}
+        onClose={() => setShowServerSettings(false)}
+      />
+    )}
+  </>
   );
 }
