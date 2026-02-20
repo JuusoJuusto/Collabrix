@@ -8,6 +8,10 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
   const { name, description, icon } = req.body;
 
   try {
+    if (!req.userId) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+
     const serverRef = db.collection('servers').doc();
     const serverId = serverRef.id;
 
@@ -53,9 +57,9 @@ router.post('/', authenticate, async (req: AuthRequest, res) => {
     await db.collection('servers').doc(serverId).collection('channels').doc(voiceChannel.id).set(voiceChannel);
 
     res.status(201).json({ ...serverData, channels: [generalChannel, voiceChannel] });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Create server error:', error);
-    res.status(500).json({ error: 'Failed to create server' });
+    res.status(500).json({ error: error.message || 'Failed to create server' });
   }
 });
 

@@ -3,8 +3,6 @@ import { auth } from './firebase';
 // Force the API URL to be absolute with https
 const API_URL = 'https://echochat-production.up.railway.app/api';
 
-console.log('🔧 API_URL configured:', API_URL);
-
 // Always return the full URL
 const getApiUrl = () => API_URL;
 
@@ -28,7 +26,6 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
   }
 
   const fullUrl = `${getApiUrl()}${url}`;
-  console.log('🌐 API Request:', fullUrl);
 
   const response = await fetch(fullUrl, {
     ...options,
