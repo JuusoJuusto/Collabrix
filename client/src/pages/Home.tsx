@@ -78,8 +78,9 @@ export default function Home() {
       setError('');
     } catch (error: any) {
       console.error('Failed to load servers:', error);
-      if (error.message?.includes('Failed to fetch')) {
-        setError('Cannot connect to server. Using offline mode.');
+      // Don't show error if it's just a connection issue - user can still create servers
+      if (!error.message?.includes('Failed to fetch')) {
+        setError('Server connection issue. You can still create servers locally.');
       }
     }
   };
