@@ -13,7 +13,8 @@ import MemberList from '../components/MemberList';
 import FriendsList from '../components/FriendsList';
 import VoiceChat from '../components/VoiceChat';
 import LoadingScreen from '../components/LoadingScreen';
-import { Cog6ToothIcon, ArrowRightOnRectangleIcon, UserCircleIcon, UserGroupIcon } from '@heroicons/react/24/solid';
+import { Cog6ToothIcon, ArrowRightOnRectangleIcon, UserGroupIcon } from '@heroicons/react/24/solid';
+import UserSettings from '../components/UserSettings';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -174,102 +175,7 @@ export default function Home() {
       </div>
 
       {/* Settings Modal */}
-      {showSettings && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowSettings(false)}>
-          <div className="bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-6 border-b border-slate-700">
-              <h2 className="text-2xl font-bold text-white">User Settings</h2>
-              <button
-                onClick={() => setShowSettings(false)}
-                className="text-gray-400 hover:text-white transition"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="p-6 overflow-y-auto max-h-[calc(80vh-80px)]">
-              {/* Profile Section */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <UserCircleIcon className="w-6 h-6 text-indigo-400" />
-                  My Account
-                </h3>
-                <div className="bg-slate-900 rounded-lg p-6 space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 rounded-full bg-indigo-600 flex items-center justify-center text-white text-2xl font-bold">
-                      {user?.displayName?.substring(0, 2).toUpperCase() || 'U'}
-                    </div>
-                    <div>
-                      <p className="text-xl font-semibold text-white">{user?.displayName || 'User'}</p>
-                      <p className="text-sm text-gray-400">@{user?.username || 'user'}</p>
-                      <p className="text-sm text-gray-500">{user?.email}</p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700">
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase mb-1">User ID</p>
-                      <p className="text-sm text-gray-300 font-mono">{user?.id?.substring(0, 12)}...</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase mb-1">Status</p>
-                      <p className="text-sm text-green-400 flex items-center gap-2">
-                        <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                        Online
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Appearance Section */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-white mb-4">Appearance</h3>
-                <div className="bg-slate-900 rounded-lg p-6 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-white font-medium">Dark Mode</p>
-                      <p className="text-sm text-gray-400">Always enabled for better experience</p>
-                    </div>
-                    <div className="w-12 h-6 bg-indigo-600 rounded-full flex items-center px-1">
-                      <div className="w-4 h-4 bg-white rounded-full ml-auto"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Privacy Section */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-white mb-4">Privacy & Safety</h3>
-                <div className="bg-slate-900 rounded-lg p-6 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-white font-medium">Email Verified</p>
-                      <p className="text-sm text-gray-400">Your email is verified</p>
-                    </div>
-                    <span className="text-green-400 text-sm font-medium">✓ Verified</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Danger Zone */}
-              <div>
-                <h3 className="text-lg font-semibold text-red-400 mb-4">Danger Zone</h3>
-                <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-6">
-                  <button
-                    onClick={handleLogout}
-                    className="w-full py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition"
-                  >
-                    Logout
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {showSettings && <UserSettings onClose={() => setShowSettings(false)} />}
 
       {/* Error Toast */}
       {error && (
