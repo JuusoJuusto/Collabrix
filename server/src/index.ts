@@ -19,38 +19,22 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        'http://localhost:5173',
-        'https://collabrixs.vercel.app',
-        process.env.CORS_ORIGIN
-      ].filter(Boolean);
-      
-      if (!origin || allowedOrigins.some(allowed => origin.includes(allowed?.split('://')[1] || ''))) {
-        callback(null, true);
-      } else {
-        callback(null, true); // Allow all for now
-      }
-    },
+    origin: [
+      'http://localhost:5173',
+      'https://collabrixs.vercel.app',
+      'https://www.collabrixs.vercel.app'
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
   }
 });
 
 app.use(cors({ 
-  origin: (origin, callback) => {
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'https://collabrixs.vercel.app',
-      process.env.CORS_ORIGIN
-    ].filter(Boolean);
-    
-    if (!origin || allowedOrigins.some(allowed => origin.includes(allowed?.split('://')[1] || ''))) {
-      callback(null, true);
-    } else {
-      callback(null, true); // Allow all for now
-    }
-  },
+  origin: [
+    'http://localhost:5173',
+    'https://collabrixs.vercel.app',
+    'https://www.collabrixs.vercel.app'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));

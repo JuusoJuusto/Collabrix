@@ -23,7 +23,7 @@ export default function Landing() {
       <nav className="fixed top-0 w-full bg-slate-900/90 backdrop-blur-xl border-b border-slate-700/50 z-50 animate-slide-down">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3 animate-fade-in">
-            <img src="/logo.png" alt="Collabrix" className="w-10 h-10 transform hover:scale-110 hover:rotate-12 transition-all duration-300 drop-shadow-lg" />
+            <img src="/logo.png" alt="Collabrix" className="w-12 h-12 transform hover:scale-110 hover:rotate-12 transition-all duration-300 drop-shadow-lg" />
             <span className="text-2xl font-bold text-white">Collabrix</span>
           </div>
           <div className="flex items-center gap-4 animate-fade-in animation-delay-200">
@@ -85,7 +85,7 @@ export default function Landing() {
                 <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span>Free Forever</span>
+                <span>Free</span>
               </div>
               <div className="flex items-center gap-2">
                 <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
@@ -153,7 +153,7 @@ export default function Landing() {
               <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 mb-2">
                 Free
               </div>
-              <div className="text-slate-400">Always Free</div>
+              <div className="text-slate-400">No Paywalls</div>
             </div>
           </div>
         </div>
