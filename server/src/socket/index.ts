@@ -131,19 +131,54 @@ export const setupSocketHandlers = (io: Server) => {
       });
     });
 
-    socket.on('voice:join', (channelId: string) => {
+    socket.on('voice:join', async (channelId: string) => {
       socket.join(`voice:${channelId}`);
+      
+      // Get all sockets in this voice channel
+      const socketsInChannel = await io.in(`voice:${channelId}`).fetchSockets();
+      const participants = socketsInChannel
+        .filter(s => s.id !== socket.id)
+        .map(s => ({ userId: (s as any).userId, socketId: s.id }));
+      
+      // Notify others that this user joined
       socket.to(`voice:${channelId}`).emit('voice:user-joined', {
         userId: socket.userId,
+        socketId: socket.id,
         channelId
       });
+      
+      // Send existing participants to the new user
+      socket.emit('voice:participants', participants);
     });
 
     socket.on('voice:leave', (channelId: string) => {
       socket.leave(`voice:${channelId}`);
       socket.to(`voice:${channelId}`).emit('voice:user-left', {
         userId: socket.userId,
+        socketId: socket.id,
         channelId
+      });
+    });
+
+    // WebRTC signaling
+    socket.on('voice:offer', (data: { to: string; offer: RTCSessionDescriptionInit }) => {
+      io.to(data.to).emit('voice:offer', {
+        from: socket.id,
+        offer: data.offer
+      });
+    });
+
+    socket.on('voice:answer', (data: { to: string; answer: RTCSessionDescriptionInit }) => {
+      io.to(data.to).emit('voice:answer', {
+        from: socket.id,
+        answer: data.answer
+      });
+    });
+
+    socket.on('voice:ice-candidate', (data: { to: string; candidate: RTCIceCandidateInit }) => {
+      io.to(data.to).emit('voice:ice-candidate', {
+        from: socket.id,
+        candidate: data.candidate
       });
     });
 
