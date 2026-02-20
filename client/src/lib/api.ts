@@ -1,5 +1,6 @@
-import { auth, db } from './firebase';
-import { collection, addDoc, getDocs, query, where, orderBy, doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth, db, realtimeDb } from './firebase';
+import { collection, addDoc, getDocs, query, where, orderBy, doc, setDoc, getDoc, onSnapshot } from 'firebase/firestore';
+import { ref, push, onValue, off, query as rtQuery, orderByChild, limitToLast, get, set } from 'firebase/database';
 
 // Use Firebase directly instead of Railway API
 const useFirebaseDirectly = true;
@@ -157,15 +158,71 @@ export const channelAPI = {
   getMessages: async (channelId: string, limit = 50) => {
     if (!useFirebaseDirectly) return [];
     
-    const messagesRef = collection(db, 'messages');
-    const q = query(
-      messagesRef,
-      where('channelId', '==', channelId),
-      orderBy('createdAt', 'desc')
-    );
+    try {
+      // Use Realtime Database for messages
+      const messagesRef = ref(realtimeDb, `messages/${channelId}`);
+      const messagesQuery = rtQuery(messagesRef, orderByChild('createdAt'), limitToLast(limit));
+      
+      const snapshot = await get(messagesQuery);
+      const messages: any[] = [];
+      
+      snapshot.forEach((childSnapshot) => {
+        messages.push({
+          id: childSnapshot.key,
+          ...childSnapshot.val()
+        });
+      });
+      
+      return messages;
+    } catch (error) {
+      return [];
+    }
+  },
+
+  // Subscribe to real-time messages
+  subscribeToMessages: (channelId: string, callback: (messages: any[]) => void) => {
+    const messagesRef = ref(realtimeDb, `messages/${channelId}`);
+    const messagesQuery = rtQuery(messagesRef, orderByChild('createdAt'), limitToLast(50));
     
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).reverse();
+    const unsubscribe = onValue(messagesQuery, (snapshot) => {
+      const messages: any[] = [];
+      snapshot.forEach((childSnapshot) => {
+        messages.push({
+          id: childSnapshot.key,
+          ...childSnapshot.val()
+        });
+      });
+      callback(messages);
+    });
+    
+    return () => off(messagesRef);
+  },
+
+  sendMessage: async (channelId: string, content: string) => {
+    if (!useFirebaseDirectly) throw new Error('Message sending requires Firebase');
+    
+    const user = auth.currentUser;
+    if (!user) throw new Error('Not authenticated');
+
+    const messagesRef = ref(realtimeDb, `messages/${channelId}`);
+    const newMessageRef = push(messagesRef);
+    
+    const message = {
+      content,
+      channelId,
+      author: {
+        id: user.uid,
+        username: user.email?.split('@')[0] || 'user',
+        displayName: user.displayName || user.email?.split('@')[0] || 'User',
+        avatar: user.photoURL || null
+      },
+      createdAt: Date.now(),
+      edited: false
+    };
+
+    // Write to Realtime Database
+    await set(newMessageRef, message);
+    return { id: newMessageRef.key, ...message };
   },
 
   create: async (data: { name: string; type: string; serverId: string; topic?: string }) => {

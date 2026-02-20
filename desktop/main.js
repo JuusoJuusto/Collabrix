@@ -39,14 +39,37 @@ function createWindow() {
       partition: 'persist:collabrix',
       allowRunningInsecureContent: false,
       enableRemoteModule: false,
-      nativeWindowOpen: true
+      nativeWindowOpen: true,
+      // Enable media permissions
+      enableWebSQL: false,
+      experimentalFeatures: true
     },
     backgroundColor: '#0f172a',
-    show: false, // Don't show until ready
+    show: false,
     frame: false,
     titleBarStyle: 'hidden',
     autoHideMenuBar: true,
     title: 'Collabrix - Connect, Chat, Collaborate'
+  });
+
+  // Set permissions for media devices
+  mainWindow.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => {
+    const allowedPermissions = ['media', 'microphone', 'camera', 'notifications'];
+    if (allowedPermissions.includes(permission)) {
+      callback(true); // Allow
+    } else {
+      callback(false); // Deny
+    }
+  });
+
+  // Set feature policy to allow microphone and camera
+  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Permissions-Policy': 'microphone=*, camera=*, notifications=*'
+      }
+    });
   });
 
   // Maximize window on startup

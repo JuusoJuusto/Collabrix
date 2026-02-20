@@ -2,6 +2,7 @@ import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import { getDatabase } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyDb4aSjXkg0YtrSAGASmfqPvwThyR0X_G8',
@@ -9,7 +10,8 @@ const firebaseConfig = {
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'studiowl-3b22d',
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'studiowl-3b22d.firebasestorage.app',
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '140077048339',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:140077048339:web:ce620a654c7130df3f55e6'
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:140077048339:web:ce620a654c7130df3f55e6',
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || 'https://studiowl-3b22d-default-rtdb.firebaseio.com'
 };
 
 // Initialize Firebase only once
@@ -30,6 +32,10 @@ export const db = initializeFirestore(app, {
   })
 });
 
+// Initialize Realtime Database for messages
+export const realtimeDb = getDatabase(app);
+
 export const storage = getStorage(app);
 
 export default app;
+

@@ -1,25 +1,25 @@
 import { useEffect, useState, useRef } from 'react';
 import { useChatStore } from '../store/chatStore';
 import { channelAPI } from '../lib/api';
-import { socketClient } from '../lib/socket';
 import { format } from 'date-fns';
 import { PaperAirplaneIcon, HashtagIcon } from '@heroicons/react/24/solid';
 
 export default function ChatArea() {
   const { currentChannel, messages, setMessages } = useChatStore();
   const [messageInput, setMessageInput] = useState('');
-  const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     if (!currentChannel) return;
 
-    socketClient.joinChannel(currentChannel.id);
-    loadMessages();
+    // Subscribe to real-time messages
+    const unsubscribe = channelAPI.subscribeToMessages(currentChannel.id, (newMessages) => {
+      setMessages(currentChannel.id, newMessages);
+    });
 
     return () => {
-      socketClient.leaveChannel(currentChannel.id);
+      unsubscribe();
     };
   }, [currentChannel?.id]);
 
@@ -27,47 +27,24 @@ export default function ChatArea() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages[currentChannel?.id || '']]);
 
-  const loadMessages = async () => {
-    if (!currentChannel) return;
-    setLoading(true);
-    try {
-      const data = await channelAPI.getMessages(currentChannel.id);
-      setMessages(currentChannel.id, data);
-    } catch (error) {
-      console.error('Failed to load messages:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!messageInput.trim() || !currentChannel) return;
 
-    socketClient.sendMessage(currentChannel.id, messageInput.trim());
-    setMessageInput('');
-    
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-      socketClient.stopTyping(currentChannel.id);
+    try {
+      await channelAPI.sendMessage(currentChannel.id, messageInput.trim());
+      setMessageInput('');
+      
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    } catch (error) {
+      // Message send failed
     }
   };
 
   const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessageInput(e.target.value);
-    
-    if (!currentChannel) return;
-
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    } else {
-      socketClient.startTyping(currentChannel.id);
-    }
-
-    typingTimeoutRef.current = setTimeout(() => {
-      socketClient.stopTyping(currentChannel.id);
-      typingTimeoutRef.current = undefined;
-    }, 2000);
   };
 
   if (!currentChannel) {
@@ -97,11 +74,7 @@ export default function ChatArea() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-400">Loading messages...</p>
-          </div>
-        ) : channelMessages.length === 0 ? (
+        {channelMessages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <p className="text-gray-400">No messages yet. Start the conversation!</p>
           </div>
