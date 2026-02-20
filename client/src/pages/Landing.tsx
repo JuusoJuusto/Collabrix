@@ -23,11 +23,7 @@ export default function Landing() {
       <nav className="fixed top-0 w-full bg-slate-900/90 backdrop-blur-xl border-b border-slate-700/50 z-50 animate-slide-down">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3 animate-fade-in">
-            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center transform hover:scale-110 hover:rotate-12 transition-all duration-300 shadow-lg shadow-indigo-500/50">
-              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-              </svg>
-            </div>
+            <img src="/logo.png" alt="Collabrix" className="w-10 h-10 transform hover:scale-110 hover:rotate-12 transition-all duration-300 drop-shadow-lg" />
             <span className="text-2xl font-bold text-white">Collabrix</span>
           </div>
           <div className="flex items-center gap-4 animate-fade-in animation-delay-200">
@@ -55,7 +51,7 @@ export default function Landing() {
               </span>
             </h1>
             <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto animate-fade-in animation-delay-200">
-              The modern platform for teams and communities. Voice, video, and text chat all in one place.
+              The ultimate platform for gamers, teams, and communities. Voice, video, and text chat all in one place.
             </p>
             
             {/* Download Buttons */}
@@ -110,7 +106,7 @@ export default function Landing() {
               </div>
               <h3 className="text-xl font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors duration-300">Real-time Chat</h3>
               <p className="text-slate-400 group-hover:text-slate-300 transition-colors duration-300">
-                Instant messaging with your team. Share files, reactions, and stay connected in real-time.
+                Instant messaging with your team. Share files, reactions, and coordinate your next raid in real-time.
               </p>
             </div>
 
@@ -122,7 +118,7 @@ export default function Landing() {
               </div>
               <h3 className="text-xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors duration-300">Voice Channels</h3>
               <p className="text-slate-400 group-hover:text-slate-300 transition-colors duration-300">
-                Crystal-clear voice chat with low latency. Perfect for gaming, meetings, or hanging out.
+                Crystal-clear voice chat with low latency. Perfect for gaming sessions, team meetings, or just hanging out with friends.
               </p>
             </div>
 
@@ -134,7 +130,7 @@ export default function Landing() {
               </div>
               <h3 className="text-xl font-bold text-white mb-3 group-hover:text-pink-400 transition-colors duration-300">Communities</h3>
               <p className="text-slate-400 group-hover:text-slate-300 transition-colors duration-300">
-                Create servers for your team, friends, or community. Organize with channels and roles.
+                Create servers for your gaming clan, team, or community. Organize with channels, roles, and permissions.
               </p>
             </div>
           </div>

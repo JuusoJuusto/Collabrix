@@ -1,68 +1,57 @@
 # Collabrix 💬
 
-Modern real-time collaboration platform. Built with React, Node.js, Socket.io, and Firebase.
+Modern real-time collaboration platform for gamers, teams, and communities. Built with React, Node.js, Socket.io, and Firebase.
 
 ## 🚀 Quick Start
 
-### 1. Enable Firebase (REQUIRED - 2 minutes)
+### 1. Setup Environment Variables
+
+Copy the example files and fill in your credentials:
+
+```bash
+# Client
+cp client/.env.example client/.env
+
+# Server
+cp server/.env.example server/.env
+```
+
+### 2. Enable Firebase (REQUIRED)
 
 **Enable Authentication:**
-- Go to: https://console.firebase.google.com/project/studiowl-3b22d/authentication
-- Click "Get started" → "Email/Password" → Toggle ON → Save
-- Click "Google" → Toggle ON → Support email: juusojuusto112@gmail.com → Save
+- Go to Firebase Console → Authentication
+- Enable Email/Password and Google sign-in methods
 
 **Create Firestore:**
-- Go to: https://console.firebase.google.com/project/studiowl-3b22d/firestore
-- Click "Create database" → "Start in test mode" → Choose region: europe-west1 → Enable
+- Go to Firebase Console → Firestore
+- Create database in test mode
+- Choose your preferred region
 
-### 2. Start Servers
+### 3. Start Servers
 
 ```bash
 # Terminal 1 - Backend
 cd server
+npm install
 npm run dev
 
 # Terminal 2 - Frontend
 cd client
+npm install
 npm run dev
 ```
 
 Open: http://localhost:5173
-
-### 3. Test Registration
-
-1. Register a new account
-2. Check email: juusojuusto112@gmail.com
-3. Verify email (click Firebase link)
-4. Login and start chatting!
 
 ## 📦 Deploy to Production
 
 ### Backend → Railway
 
 1. Go to: https://railway.app
-2. Sign up with GitHub
-3. New Project → Deploy from GitHub → Select EchoChat
-4. Add environment variables:
-
-```env
-PORT=3001
-NODE_ENV=production
-CORS_ORIGIN=https://your-vercel-app.vercel.app
-FIREBASE_PROJECT_ID=studiowl-3b22d
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@studiowl-3b22d.iam.gserviceaccount.com
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=juusojuusto112@gmail.com
-SMTP_PASS=zwlcbmlrxsrkutme
-SMTP_FROM_NAME=EchoChat
-SMTP_FROM_EMAIL=juusojuusto112@gmail.com
-```
-
-5. Set root directory: `server`
-6. Deploy!
+2. New Project → Deploy from GitHub
+3. Set root directory: `server`
+4. Add environment variables from `server/.env.example`
+5. Deploy!
 
 ### Frontend → Vercel
 
@@ -72,31 +61,29 @@ vercel --prod
 ```
 
 Or use Vercel Dashboard:
-1. Go to: https://vercel.com
-2. New Project → Import EchoChat
-3. Root directory: `client`
-4. Add environment variables (same as client/.env)
-5. Update `VITE_API_URL` to Railway URL
-6. Deploy!
+1. New Project → Import from GitHub
+2. Root directory: `client`
+3. Add environment variables from `client/.env.example`
+4. Deploy!
 
 ### Update Firebase
 
-Add Vercel domain to Firebase:
-- Go to: https://console.firebase.google.com/project/studiowl-3b22d/authentication/settings
-- Scroll to "Authorized domains"
-- Add: your-app.vercel.app
+Add your production domain to Firebase:
+- Firebase Console → Authentication → Settings
+- Add your Vercel domain to "Authorized domains"
 
 ## ✨ Features
 
-- 🔐 Email/Password, Google, Apple Sign-In
+- 🔐 Email/Password & Google Sign-In
 - 💬 Real-time messaging (Socket.io)
-- 🌍 18 languages supported
-- 📧 Email notifications (Welcome, 2FA, Password Reset)
+- 🎮 Built for gamers and teams
+- 📧 Email notifications (Welcome, Password Reset)
 - 👥 User profiles with avatars
 - 🌐 Servers and channels
+- 🎤 Voice chat (WebRTC)
 - 📞 Direct messaging
 - ✅ Email verification
-- 🔒 Two-factor authentication
+- 🖥️ Desktop app with auto-updates
 
 ## 🛠️ Tech Stack
 
@@ -104,10 +91,12 @@ Add Vercel domain to Firebase:
 
 **Backend:** Node.js, Express, TypeScript, Socket.io, Firebase Admin, Firestore, Nodemailer
 
+**Desktop:** Electron, electron-updater
+
 ## 📁 Project Structure
 
 ```
-EchoChat/
+Collabrix/
 ├── client/          # React frontend
 │   ├── src/
 │   │   ├── components/
@@ -122,49 +111,29 @@ EchoChat/
 │   │   ├── middleware/
 │   │   └── socket/
 │   └── package.json
+├── desktop/         # Electron desktop app
+│   ├── main.js
+│   ├── preload.js
+│   └── package.json
 └── package.json
 ```
 
 ## 🔧 Environment Variables
 
-**Client (.env):**
-```env
-VITE_API_URL=http://localhost:3001/api
-VITE_WS_URL=http://localhost:3001
-VITE_FIREBASE_API_KEY=AIzaSyDb4aSjXkg0YtrSAGASmfqPvwThyR0X_G8
-VITE_FIREBASE_AUTH_DOMAIN=studiowl-3b22d.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=studiowl-3b22d
-VITE_FIREBASE_STORAGE_BUCKET=studiowl-3b22d.firebasestorage.app
-VITE_FIREBASE_MESSAGING_SENDER_ID=140077048339
-VITE_FIREBASE_APP_ID=1:140077048339:web:ce620a654c7130df3f55e6
-```
+See `.env.example` files in `client/` and `server/` directories for required environment variables.
 
-**Server (.env):**
-```env
-PORT=3001
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:5173
-FIREBASE_PROJECT_ID=studiowl-3b22d
-FIREBASE_PRIVATE_KEY="your_private_key"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@studiowl-3b22d.iam.gserviceaccount.com
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=juusojuusto112@gmail.com
-SMTP_PASS=zwlcbmlrxsrkutme
-SMTP_FROM_NAME=EchoChat
-SMTP_FROM_EMAIL=juusojuusto112@gmail.com
-```
+**Never commit your `.env` files to Git!**
 
 ## 🐛 Troubleshooting
 
-**Firestore Error (ERR_BLOCKED_BY_CLIENT):**
+**Firestore Error:**
 - Disable ad blocker for localhost
 - Or use incognito mode
 - Or whitelist: firestore.googleapis.com
 
 **Email Not Sending:**
-- Check Gmail App Password is correct
-- Verify 2-Step Verification is enabled
+- Check SMTP credentials in server/.env
+- Verify 2-Step Verification is enabled for Gmail
 - Check server logs for SMTP errors
 
 **Login Not Working:**
@@ -172,10 +141,22 @@ SMTP_FROM_EMAIL=juusojuusto112@gmail.com
 - Create Firestore database
 - Verify email before logging in
 
+## 🎮 Desktop App
+
+Build the desktop app:
+
+```bash
+cd desktop
+npm install
+npm run build:win
+```
+
+The installer will be in `desktop/dist/`
+
 ## 📄 License
 
-MIT License
+Proprietary - All rights reserved. See LICENSE file.
 
 ## 🤝 Support
 
-GitHub: https://github.com/JuusoJuusto/EchoChat
+GitHub: https://github.com/JuusoJuusto/Collabrix
