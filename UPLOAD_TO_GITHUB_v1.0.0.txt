@@ -1,0 +1,24 @@
+🚀 HOW TO CREATE GITHUB RELEASE v1.0.0
+
+1. Go to: https://github.com/JuusoJuusto/Collabrix/releases/new
+
+2. Fill in the form:
+   - Tag: v1.0.0
+   - Target: main
+   - Title: Collabrix v1.0.0 - Initial Release
+
+3. Copy the description from: GITHUB_RELEASE_v1.0.0.md
+   (Open the file and copy ALL the text)
+
+4. Upload these files:
+   - desktop/dist/Collabrix-Setup-1.0.0.exe
+   - desktop/dist/latest.yml
+
+5. Check "Set as the latest release"
+
+6. Click "Publish release"
+
+✅ DONE! Your download link will be:
+https://github.com/JuusoJuusto/Collabrix/releases/download/v1.0.0/Collabrix-Setup-1.0.0.exe
+
+The landing page download button will now work!
