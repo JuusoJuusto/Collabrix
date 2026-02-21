@@ -23,9 +23,9 @@ export default function ChannelList() {
 
   return (
     <>
-      <div className="w-60 bg-discord-darker flex flex-col">
-        <div className="h-12 px-4 flex items-center justify-between shadow-md border-b border-discord-darkest relative">
-          <h2 className="font-semibold text-white truncate flex-1">{currentServer.name}</h2>
+      <div className="w-60 bg-[#232323] flex flex-col">
+        <div className="h-12 px-4 flex items-center justify-between border-b border-[#2a2a2a] relative">
+          <h2 className="font-semibold text-white text-sm truncate flex-1">{currentServer.name}</h2>
           <button
             onClick={() => setShowServerMenu(!showServerMenu)}
             className="p-1 text-gray-400 hover:text-white transition"
@@ -35,29 +35,29 @@ export default function ChannelList() {
 
           {/* Server Menu Dropdown */}
           {showServerMenu && (
-            <div className="absolute top-full left-0 right-0 mt-1 mx-2 bg-slate-900 rounded-lg shadow-xl border border-slate-700 z-50">
+            <div className="absolute top-full left-0 right-0 mt-1 mx-2 bg-[#1a1a1a] rounded-lg border border-[#3a3a3a] z-50">
               <button
                 onClick={() => {
                   setShowServerSettings(true);
                   setShowServerMenu(false);
                 }}
-                className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-300 hover:bg-slate-800 hover:text-white transition rounded-t-lg"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-gray-300 hover:bg-[#2a2a2a] hover:text-white transition rounded-t-lg"
               >
-                <Cog6ToothIcon className="w-5 h-5" />
+                <Cog6ToothIcon className="w-4 h-4" />
                 <span className="text-sm font-medium">Server Settings</span>
               </button>
               <button
                 onClick={() => setShowServerMenu(false)}
-                className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-300 hover:bg-slate-800 hover:text-white transition"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-gray-300 hover:bg-[#2a2a2a] hover:text-white transition"
               >
-                <HashtagIcon className="w-5 h-5" />
+                <HashtagIcon className="w-4 h-4" />
                 <span className="text-sm font-medium">Create Channel</span>
               </button>
               <button
                 onClick={() => setShowServerMenu(false)}
-                className="w-full flex items-center gap-3 px-4 py-3 text-left text-red-400 hover:bg-red-500/10 hover:text-red-300 transition rounded-b-lg border-t border-slate-800"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-red-400 hover:bg-red-500/10 hover:text-red-300 transition rounded-b-lg border-t border-[#2a2a2a]"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
                 <span className="text-sm font-medium">Leave Server</span>
@@ -76,11 +76,11 @@ export default function ChannelList() {
               <button
                 key={channel.id}
                 onClick={() => setCurrentChannel(channel)}
-                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-discord-dark/50 transition ${
-                  currentChannel?.id === channel.id ? 'bg-discord-dark/70 text-white' : 'text-gray-400'
+                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-[#2a2a2a] transition ${
+                  currentChannel?.id === channel.id ? 'bg-[#2a2a2a] text-white' : 'text-gray-400'
                 }`}
               >
-                <HashtagIcon className="w-5 h-5" />
+                <HashtagIcon className="w-4 h-4" />
                 <span className="text-sm">{channel.name}</span>
               </button>
             ))}
@@ -96,11 +96,11 @@ export default function ChannelList() {
               <button
                 key={channel.id}
                 onClick={() => setCurrentChannel(channel)}
-                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-discord-dark/50 transition ${
-                  currentChannel?.id === channel.id ? 'bg-discord-dark/70 text-white' : 'text-gray-400'
+                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-[#2a2a2a] transition ${
+                  currentChannel?.id === channel.id ? 'bg-[#2a2a2a] text-white' : 'text-gray-400'
                 }`}
               >
-                <SpeakerWaveIcon className="w-5 h-5" />
+                <SpeakerWaveIcon className="w-4 h-4" />
                 <span className="text-sm">{channel.name}</span>
               </button>
             ))}
@@ -108,16 +108,16 @@ export default function ChannelList() {
         )}
       </div>
 
-      <div className="h-14 bg-discord-darkest px-2 flex items-center">
+      <div className="h-14 bg-[#1a1a1a] px-2 flex items-center border-t border-[#2a2a2a]">
         <div className="flex-1 flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-discord-blurple flex items-center justify-center text-white text-sm font-semibold">
+          <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-semibold">
             {useAuthStore.getState().user?.username.substring(0, 2).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm text-white font-medium truncate">
               {useAuthStore.getState().user?.displayName}
             </p>
-            <p className="text-xs text-gray-400 truncate">
+            <p className="text-xs text-gray-500 truncate">
               #{useAuthStore.getState().user?.username}
             </p>
           </div>

@@ -101,17 +101,17 @@ export default function Home() {
   }
 
   return (
-    <div className="flex h-screen bg-discord-darkest">
+    <div className="flex h-screen bg-[#1a1a1a]">
       <ServerList />
       
-      {/* Friends Button */}
-      <div className="w-60 bg-discord-darker flex flex-col">
+      {/* Channels Sidebar */}
+      <div className="w-60 bg-[#232323] flex flex-col border-r border-[#2a2a2a]">
         <button
           onClick={() => setShowFriends(!showFriends)}
-          className={`h-12 px-4 flex items-center gap-3 border-b border-discord-darkest hover:bg-discord-dark transition ${showFriends ? 'bg-discord-dark' : ''}`}
+          className={`h-12 px-4 flex items-center gap-3 border-b border-[#2a2a2a] hover:bg-[#2a2a2a] transition ${showFriends ? 'bg-[#2a2a2a]' : ''}`}
         >
           <UserGroupIcon className="w-5 h-5 text-gray-400" />
-          <span className="text-white font-semibold">Friends</span>
+          <span className="text-white font-medium text-sm">Friends</span>
         </button>
         <ChannelList />
       </div>
@@ -119,8 +119,8 @@ export default function Home() {
       {showFriends ? (
         <>
           <FriendsList />
-          <div className="w-60 bg-discord-darker border-l border-discord-darkest p-4">
-            <h3 className="text-gray-400 text-sm font-semibold uppercase mb-4">Active Now</h3>
+          <div className="w-60 bg-[#232323] border-l border-[#2a2a2a] p-4">
+            <h3 className="text-gray-400 text-xs font-semibold uppercase mb-4">Active Now</h3>
             <p className="text-gray-500 text-sm text-center py-8">No one is active right now</p>
           </div>
         </>
@@ -130,14 +130,14 @@ export default function Home() {
           <MemberList />
         </>
       ) : (
-        <div className="flex-1 flex items-center justify-center bg-discord-dark">
+        <div className="flex-1 flex items-center justify-center bg-[#1e1e1e]">
           <div className="text-center">
-            <UserGroupIcon className="w-20 h-20 text-gray-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-white mb-2">Welcome to Collabrix!</h2>
-            <p className="text-gray-400 mb-6">Select a server or view your friends to get started</p>
+            <UserGroupIcon className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-white mb-2">Welcome to Collabrix</h2>
+            <p className="text-gray-400 text-sm mb-6">Select a server or view your friends to get started</p>
             <button
               onClick={() => setShowFriends(true)}
-              className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+              className="px-5 py-2.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition font-medium"
             >
               View Friends
             </button>
@@ -146,28 +146,28 @@ export default function Home() {
       )}
 
       {/* User Menu Bar */}
-      <div className="fixed bottom-0 left-0 w-72 h-14 bg-discord-darker border-t border-discord-darkest flex items-center px-2 gap-2">
+      <div className="fixed bottom-0 left-0 w-72 h-14 bg-[#1a1a1a] border-t border-[#2a2a2a] flex items-center px-2 gap-2">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
+          <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
             {user?.displayName?.substring(0, 2).toUpperCase() || 'U'}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-white truncate">{user?.displayName || 'User'}</p>
-            <p className="text-xs text-gray-400 truncate">@{user?.username || 'user'}</p>
+            <p className="text-xs text-gray-500 truncate">@{user?.username || 'user'}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-1">
           <button
             onClick={() => setShowSettings(true)}
-            className="p-2 text-gray-400 hover:text-white hover:bg-discord-dark rounded transition"
+            className="p-2 text-gray-400 hover:text-white hover:bg-[#2a2a2a] rounded transition"
             title="Settings"
           >
             <Cog6ToothIcon className="w-5 h-5" />
           </button>
           <button
             onClick={handleLogout}
-            className="p-2 text-gray-400 hover:text-red-400 hover:bg-discord-dark rounded transition"
+            className="p-2 text-gray-400 hover:text-red-400 hover:bg-[#2a2a2a] rounded transition"
             title="Logout"
           >
             <ArrowRightOnRectangleIcon className="w-5 h-5" />
