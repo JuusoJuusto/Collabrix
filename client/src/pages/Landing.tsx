@@ -5,7 +5,8 @@ export default function Landing() {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleDownload = () => {
-    window.open('https://github.com/JuusoJuusto/Collabrix/releases/latest', '_blank');
+    // Direct download link to the exe file
+    window.location.href = 'https://github.com/JuusoJuusto/Collabrix/releases/latest/download/Collabrix-Setup-1.0.0.exe';
   };
 
   return (

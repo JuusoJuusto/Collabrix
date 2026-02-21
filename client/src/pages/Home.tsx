@@ -15,6 +15,7 @@ import VoiceChat from '../components/VoiceChat';
 import LoadingScreen from '../components/LoadingScreen';
 import { Cog6ToothIcon, ArrowRightOnRectangleIcon, UserGroupIcon } from '@heroicons/react/24/solid';
 import UserSettings from '../components/UserSettings';
+import DownloadPopup from '../components/DownloadPopup';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -201,6 +202,9 @@ export default function Home() {
 
       {/* Voice Chat */}
       <VoiceChat />
+
+      {/* Download Popup */}
+      <DownloadPopup />
     </div>
   );
 }
