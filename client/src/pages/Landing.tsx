@@ -1,12 +1,12 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 export default function Landing() {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
 
   const handleDownload = () => {
-    // Direct download link to the exe file
-    window.location.href = 'https://github.com/JuusoJuusto/Collabrix/releases/latest/download/Collabrix-Setup-1.0.0.exe';
+    navigate('/download');
   };
 
   return (

@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 
 export default function DownloadPopup() {
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Check if running in Electron (desktop app)
+    const isElectron = navigator.userAgent.toLowerCase().includes('electron');
+    
+    // Don't show popup in desktop app
+    if (isElectron) return;
+    
     // Check if user is on Windows
     const isWindows = navigator.platform.toLowerCase().includes('win');
     
@@ -29,8 +37,7 @@ export default function DownloadPopup() {
   };
 
   const handleDownload = () => {
-    // Direct download link to the latest release
-    window.location.href = 'https://github.com/JuusoJuusto/Collabrix/releases/latest/download/Collabrix-Setup-1.0.0.exe';
+    navigate('/download');
     handleDismiss();
   };
 

@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import FirebaseAction from './pages/FirebaseAction';
 import Home from './pages/Home';
+import Download from './pages/Download';
 
 function App() {
   const { token } = useAuthStore();
@@ -14,6 +15,7 @@ function App() {
     <div className="h-screen bg-discord-darkest dark">
       <Routes>
         <Route path="/" element={!token ? <Landing /> : <Home />} />
+        <Route path="/download" element={<Download />} />
         <Route path="/auth/action" element={<FirebaseAction />} />
         <Route path="/login" element={!token ? <Login /> : <Navigate to="/" />} />
         <Route path="/register" element={!token ? <Register /> : <Navigate to="/" />} />
