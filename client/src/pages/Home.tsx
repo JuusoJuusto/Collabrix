@@ -167,6 +167,13 @@ export default function Home() {
           >
             <Cog6ToothIcon className="w-5 h-5" />
           </button>
+          <button
+            onClick={handleLogout}
+            className="p-2 text-[#b5bac1] hover:text-[#f23f43] hover:bg-[#35373c] rounded transition"
+            title="Logout"
+          >
+            <ArrowRightOnRectangleIcon className="w-5 h-5" />
+          </button>
         </div>
       </div>
 

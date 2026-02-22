@@ -7,6 +7,9 @@ export default function Download() {
   const [countdown, setCountdown] = useState(3);
 
   useEffect(() => {
+    // Scroll to top when component mounts
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     // Start countdown
     const timer = setInterval(() => {
       setCountdown((prev) => {
