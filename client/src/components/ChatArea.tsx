@@ -78,6 +78,9 @@ export default function ChatArea() {
     }
   };
 
+  // Get channel messages first before using them
+  const channelMessages = messages[currentChannel?.id || ''] || [];
+
   const handlePinMessage = (messageId: string) => {
     // Add to pinned messages
     const message = channelMessages.find(m => m.id === messageId);
@@ -124,8 +127,6 @@ export default function ChatArea() {
       </div>
     );
   }
-
-  const channelMessages = messages[currentChannel.id] || [];
 
   return (
     <div className="flex-1 flex flex-col bg-[#313338] relative">
