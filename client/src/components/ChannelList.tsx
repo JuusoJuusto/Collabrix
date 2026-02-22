@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useChatStore } from '../store/chatStore';
 import { useAuthStore } from '../store/authStore';
 import { HashtagIcon, SpeakerWaveIcon, Cog6ToothIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { PlusIcon } from '@heroicons/react/24/solid';
 import ServerSettings from './ServerSettings';
 
 export default function ChannelList() {
@@ -11,11 +12,7 @@ export default function ChannelList() {
   const [showServerMenu, setShowServerMenu] = useState(false);
 
   if (!currentServer) {
-    return (
-      <div className="w-60 bg-discord-darker flex items-center justify-center text-gray-400">
-        Select a server
-      </div>
-    );
+    return null;
   }
 
   const textChannels = currentServer.channels.filter((c) => c.type === 'TEXT');
@@ -23,122 +20,122 @@ export default function ChannelList() {
 
   return (
     <>
-      <div className="w-60 bg-[#232323] flex flex-col">
-        <div className="h-12 px-4 flex items-center justify-between border-b border-[#2a2a2a] relative">
-          <h2 className="font-semibold text-white text-sm truncate flex-1">{currentServer.name}</h2>
-          <button
-            onClick={() => setShowServerMenu(!showServerMenu)}
-            className="p-1 text-gray-400 hover:text-white transition"
-          >
-            <ChevronDownIcon className="w-5 h-5" />
-          </button>
+      <div className="flex-1 flex flex-col">
+        {/* Server Header */}
+        <div className="h-12 px-4 flex items-center justify-between border-b border-[#1e1f22] hover:bg-[#35373c] cursor-pointer relative" onClick={() => setShowServerMenu(!showServerMenu)}>
+          <h2 className="font-semibold text-white text-[15px] truncate flex-1">{currentServer.name}</h2>
+          <ChevronDownIcon className={`w-5 h-5 text-[#b5bac1] transition-transform ${showServerMenu ? 'rotate-180' : ''}`} />
 
           {/* Server Menu Dropdown */}
           {showServerMenu && (
-            <div className="absolute top-full left-0 right-0 mt-1 mx-2 bg-[#1a1a1a] rounded-lg border border-[#3a3a3a] z-50">
+            <div className="absolute top-full left-2 right-2 mt-1 bg-[#111214] rounded shadow-xl border border-[#1e1f22] z-50" onClick={(e) => e.stopPropagation()}>
               <button
                 onClick={() => {
                   setShowServerSettings(true);
                   setShowServerMenu(false);
                 }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-gray-300 hover:bg-[#2a2a2a] hover:text-white transition rounded-t-lg"
+                className="w-full flex items-center justify-between px-3 py-2.5 text-left text-[#b5bac1] hover:bg-[#5865f2] hover:text-white transition text-sm"
               >
+                <span>Server Settings</span>
                 <Cog6ToothIcon className="w-4 h-4" />
-                <span className="text-sm font-medium">Server Settings</span>
               </button>
               <button
                 onClick={() => setShowServerMenu(false)}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-gray-300 hover:bg-[#2a2a2a] hover:text-white transition"
+                className="w-full flex items-center justify-between px-3 py-2.5 text-left text-[#b5bac1] hover:bg-[#5865f2] hover:text-white transition text-sm"
               >
-                <HashtagIcon className="w-4 h-4" />
-                <span className="text-sm font-medium">Create Channel</span>
+                <span>Create Channel</span>
+                <PlusIcon className="w-4 h-4" />
               </button>
+              <div className="h-px bg-[#1e1f22] my-1" />
               <button
                 onClick={() => setShowServerMenu(false)}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-red-400 hover:bg-red-500/10 hover:text-red-300 transition rounded-b-lg border-t border-[#2a2a2a]"
+                className="w-full flex items-center justify-between px-3 py-2.5 text-left text-[#f23f43] hover:bg-[#f23f43] hover:text-white transition text-sm rounded-b"
               >
+                <span>Leave Server</span>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                <span className="text-sm font-medium">Leave Server</span>
               </button>
             </div>
           )}
         </div>
 
-      <div className="flex-1 overflow-y-auto p-2">
-        {textChannels.length > 0 && (
-          <div className="mb-4">
-            <h3 className="px-2 text-xs font-semibold text-gray-400 uppercase mb-1">
-              Text Channels
-            </h3>
-            {textChannels.map((channel) => (
-              <button
-                key={channel.id}
-                onClick={() => setCurrentChannel(channel)}
-                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-[#2a2a2a] transition ${
-                  currentChannel?.id === channel.id ? 'bg-[#2a2a2a] text-white' : 'text-gray-400'
-                }`}
-              >
-                <HashtagIcon className="w-4 h-4" />
-                <span className="text-sm">{channel.name}</span>
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Channels */}
+        <div className="flex-1 overflow-y-auto py-4 px-2">
+          {textChannels.length > 0 && (
+            <div className="mb-4">
+              <div className="flex items-center justify-between px-2 mb-1 group">
+                <h3 className="text-xs font-semibold text-[#949ba4] uppercase tracking-wide">
+                  Text Channels
+                </h3>
+                <button className="opacity-0 group-hover:opacity-100 text-[#949ba4] hover:text-white transition" title="Create Channel">
+                  <PlusIcon className="w-4 h-4" />
+                </button>
+              </div>
+              {textChannels.map((channel) => (
+                <button
+                  key={channel.id}
+                  onClick={() => setCurrentChannel(channel)}
+                  className={`w-full flex items-center gap-1.5 px-2 py-1.5 rounded hover:bg-[#35373c] transition group ${
+                    currentChannel?.id === channel.id ? 'bg-[#404249] text-white' : 'text-[#949ba4]'
+                  }`}
+                >
+                  <HashtagIcon className="w-5 h-5 flex-shrink-0" />
+                  <span className="text-[15px] truncate">{channel.name}</span>
+                  <div className="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100">
+                    <button className="p-0.5 hover:text-white" title="Invite">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                      </svg>
+                    </button>
+                    <button className="p-0.5 hover:text-white" title="Settings">
+                      <Cog6ToothIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
 
-        {voiceChannels.length > 0 && (
-          <div>
-            <h3 className="px-2 text-xs font-semibold text-gray-400 uppercase mb-1">
-              Voice Channels
-            </h3>
-            {voiceChannels.map((channel) => (
-              <button
-                key={channel.id}
-                onClick={() => setCurrentChannel(channel)}
-                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-[#2a2a2a] transition ${
-                  currentChannel?.id === channel.id ? 'bg-[#2a2a2a] text-white' : 'text-gray-400'
-                }`}
-              >
-                <SpeakerWaveIcon className="w-4 h-4" />
-                <span className="text-sm">{channel.name}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="h-14 bg-[#1a1a1a] px-2 flex items-center border-t border-[#2a2a2a]">
-        <div className="flex-1 flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-semibold">
-            {useAuthStore.getState().user?.username.substring(0, 2).toUpperCase()}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm text-white font-medium truncate">
-              {useAuthStore.getState().user?.displayName}
-            </p>
-            <p className="text-xs text-gray-500 truncate">
-              #{useAuthStore.getState().user?.username}
-            </p>
-          </div>
+          {voiceChannels.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between px-2 mb-1 group">
+                <h3 className="text-xs font-semibold text-[#949ba4] uppercase tracking-wide">
+                  Voice Channels
+                </h3>
+                <button className="opacity-0 group-hover:opacity-100 text-[#949ba4] hover:text-white transition" title="Create Channel">
+                  <PlusIcon className="w-4 h-4" />
+                </button>
+              </div>
+              {voiceChannels.map((channel) => (
+                <button
+                  key={channel.id}
+                  onClick={() => setCurrentChannel(channel)}
+                  className={`w-full flex items-center gap-1.5 px-2 py-1.5 rounded hover:bg-[#35373c] transition group ${
+                    currentChannel?.id === channel.id ? 'bg-[#404249] text-white' : 'text-[#949ba4]'
+                  }`}
+                >
+                  <SpeakerWaveIcon className="w-5 h-5 flex-shrink-0" />
+                  <span className="text-[15px] truncate">{channel.name}</span>
+                  <div className="ml-auto flex items-center gap-1 opacity-0 group-hover:opacity-100">
+                    <button className="p-0.5 hover:text-white" title="Settings">
+                      <Cog6ToothIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-        <button
-          onClick={logout}
-          className="text-gray-400 hover:text-white text-xs"
-          title="Logout"
-        >
-          Logout
-        </button>
       </div>
-    </div>
 
-    {/* Server Settings Modal */}
-    {showServerSettings && (
-      <ServerSettings
-        server={currentServer}
-        onClose={() => setShowServerSettings(false)}
-      />
-    )}
-  </>
+      {/* Server Settings Modal */}
+      {showServerSettings && (
+        <ServerSettings
+          server={currentServer}
+          onClose={() => setShowServerSettings(false)}
+        />
+      )}
+    </>
   );
 }
