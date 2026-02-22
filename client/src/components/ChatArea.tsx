@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useChatStore } from '../store/chatStore';
 import { channelAPI } from '../lib/api';
 import { format } from 'date-fns';
-import { PaperAirplaneIcon, HashtagIcon, PlusIcon, FaceSmileIcon, GifIcon, MagnifyingGlassIcon, PushPinIcon, CalendarIcon } from '@heroicons/react/24/solid';
+import { PaperAirplaneIcon, HashtagIcon, PlusIcon, FaceSmileIcon, GifIcon, MagnifyingGlassIcon, CalendarIcon } from '@heroicons/react/24/solid';
 
 export default function ChatArea() {
   const { currentChannel, messages, setMessages } = useChatStore();
@@ -154,7 +154,9 @@ export default function ChatArea() {
             className={`p-2 rounded transition relative ${showPinned ? 'bg-[#404249] text-white' : 'text-[#b5bac1] hover:text-white hover:bg-[#404249]'}`}
             title="Pinned Messages (Ctrl+P)"
           >
-            <PushPinIcon className="w-5 h-5" />
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
+            </svg>
             {pinnedMessages.length > 0 && (
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#f23f43] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                 {pinnedMessages.length}
@@ -216,7 +218,9 @@ export default function ChatArea() {
         <div className="px-4 py-3 bg-[#2b2d31] border-b border-[#26272b]">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-              <PushPinIcon className="w-4 h-4" />
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
+              </svg>
               Pinned Messages ({pinnedMessages.length})
             </h3>
             <button onClick={() => setShowPinned(false)} className="text-[#949ba4] hover:text-white">
@@ -341,7 +345,9 @@ export default function ChatArea() {
                           </span>
                           {isPinned && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#5865f2]/20 text-[#5865f2] text-xs rounded">
-                              <PushPinIcon className="w-3 h-3" />
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
+                              </svg>
                               Pinned
                             </span>
                           )}
@@ -354,7 +360,9 @@ export default function ChatArea() {
                           className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition"
                           title={isPinned ? "Unpin" : "Pin message"}
                         >
-                          <PushPinIcon className="w-4 h-4" />
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
+                          </svg>
                         </button>
                         <button className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition" title="Reply">
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -384,7 +392,9 @@ export default function ChatArea() {
                           className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition"
                           title={isPinned ? "Unpin" : "Pin message"}
                         >
-                          <PushPinIcon className="w-4 h-4" />
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
+                          </svg>
                         </button>
                       </div>
                     </div>
