@@ -11,6 +11,7 @@ import ChannelList from '../components/ChannelList';
 import ChatArea from '../components/ChatArea';
 import MemberList from '../components/MemberList';
 import FriendsList from '../components/FriendsList';
+import DMChat from '../components/DMChat';
 import VoiceChat from '../components/VoiceChat';
 import LoadingScreen from '../components/LoadingScreen';
 import { Cog6ToothIcon, ArrowRightOnRectangleIcon, UserGroupIcon } from '@heroicons/react/24/solid';
@@ -23,6 +24,7 @@ export default function Home() {
   const { setServers, currentServer, addMessage, updateMessage, deleteMessage } = useChatStore();
   const [showSettings, setShowSettings] = useState(false);
   const [showFriends, setShowFriends] = useState(false);
+  const [activeDMUserId, setActiveDMUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -57,8 +59,8 @@ export default function Home() {
       updateMessage(message);
     });
 
-    socket.on('message:deleted', ({ messageId, channelId }) => {
-      deleteMessage(messageId, channelId);
+    socket.on('message:deleted', (data: { messageId: string; channelId: string }) => {
+      deleteMessage(data.messageId, data.channelId);
     });
 
     socket.on('user:status', ({ userId, status }) => {
@@ -95,6 +97,15 @@ export default function Home() {
     }
   };
 
+  const handleOpenDM = (userId: string) => {
+    setActiveDMUserId(userId);
+    setShowFriends(true);
+  };
+
+  const handleBackToFriends = () => {
+    setActiveDMUserId(null);
+  };
+
   if (loading) {
     return <LoadingScreen />;
   }
@@ -117,11 +128,23 @@ export default function Home() {
 
       {showFriends ? (
         <>
-          <FriendsList />
-          <div className="w-60 bg-[#2b2d31] border-l border-[#1e1f22] p-4">
-            <h3 className="text-[#949ba4] text-xs font-semibold uppercase mb-4">Active Now</h3>
-            <p className="text-[#80848e] text-sm text-center py-8">No one is active right now</p>
-          </div>
+          {activeDMUserId ? (
+            <>
+              <DMChat userId={activeDMUserId} onBack={handleBackToFriends} />
+              <div className="w-60 bg-[#2b2d31] border-l border-[#1e1f22] p-4">
+                <h3 className="text-[#949ba4] text-xs font-semibold uppercase mb-4">User Info</h3>
+                <p className="text-[#80848e] text-sm">Direct message conversation</p>
+              </div>
+            </>
+          ) : (
+            <>
+              <FriendsList onOpenDM={handleOpenDM} />
+              <div className="w-60 bg-[#2b2d31] border-l border-[#1e1f22] p-4">
+                <h3 className="text-[#949ba4] text-xs font-semibold uppercase mb-4">Active Now</h3>
+                <p className="text-[#80848e] text-sm text-center py-8">No one is active right now</p>
+              </div>
+            </>
+          )}
         </>
       ) : currentServer ? (
         <>

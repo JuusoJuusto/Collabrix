@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { UserGroupIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { UserGroupIcon, CheckIcon, XMarkIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/solid';
+import { dmAPI } from '../lib/api';
 
 interface Friend {
   id: string;
@@ -15,10 +16,22 @@ interface FriendRequest {
   createdAt: string;
 }
 
-export default function FriendsList() {
-  const [activeTab, setActiveTab] = useState<'online' | 'all' | 'pending' | 'add'>('online');
+interface DMConversation {
+  id: string;
+  otherUserId: string;
+  lastMessage: string;
+  lastMessageAt: number;
+}
+
+interface FriendsListProps {
+  onOpenDM?: (userId: string) => void;
+}
+
+export default function FriendsList({ onOpenDM }: FriendsListProps) {
+  const [activeTab, setActiveTab] = useState<'online' | 'all' | 'pending' | 'add' | 'messages'>('online');
   const [friends, setFriends] = useState<Friend[]>([]);
   const [pendingRequests, setPendingRequests] = useState<FriendRequest[]>([]);
+  const [dmConversations, setDmConversations] = useState<DMConversation[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Mock data for demo
@@ -28,7 +41,19 @@ export default function FriendsList() {
       { id: '2', username: 'user2', displayName: 'User Two', status: 'OFFLINE' },
       { id: '3', username: 'user3', displayName: 'User Three', status: 'IDLE' },
     ]);
+
+    // Load DM conversations
+    loadDMConversations();
   }, []);
+
+  const loadDMConversations = async () => {
+    try {
+      const conversations = await dmAPI.getAll();
+      setDmConversations(conversations);
+    } catch (error) {
+      console.error('Failed to load DM conversations:', error);
+    }
+  };
 
   const handleAddFriend = async () => {
     if (!searchQuery.trim()) return;
@@ -45,6 +70,12 @@ export default function FriendsList() {
     setPendingRequests(prev => prev.filter(r => r.id !== requestId));
   };
 
+  const handleOpenDM = (userId: string) => {
+    if (onOpenDM) {
+      onOpenDM(userId);
+    }
+  };
+
   const filteredFriends = friends.filter(friend => {
     if (activeTab === 'online') return friend.status === 'ONLINE';
     return true;
@@ -53,34 +84,40 @@ export default function FriendsList() {
   return (
     <div className="flex-1 flex flex-col bg-discord-dark">
       {/* Header */}
-      <div className="h-12 px-4 flex items-center shadow-md border-b border-discord-darkest">
-        <UserGroupIcon className="w-6 h-6 text-gray-400 mr-3" />
+      <div className="h-12 px-4 flex items-center shadow-md border-b border-discord-darkest bg-[#313338]">
+        <UserGroupIcon className="w-6 h-6 text-[#80848e] mr-3" />
         <h2 className="font-semibold text-white">Friends</h2>
       </div>
 
       {/* Tabs */}
-      <div className="px-4 py-2 border-b border-discord-darkest flex items-center gap-4">
+      <div className="px-4 py-2 border-b border-discord-darkest flex items-center gap-2 bg-[#2b2d31]">
+        <button
+          onClick={() => setActiveTab('messages')}
+          className={`px-3 py-1.5 rounded text-sm font-medium transition ${activeTab === 'messages' ? 'bg-[#404249] text-white' : 'text-gray-400 hover:text-white hover:bg-[#35373c]'}`}
+        >
+          Messages {dmConversations.length > 0 && `(${dmConversations.length})`}
+        </button>
         <button
           onClick={() => setActiveTab('online')}
-          className={`px-3 py-1 rounded ${activeTab === 'online' ? 'bg-discord-gray text-white' : 'text-gray-400 hover:text-white'}`}
+          className={`px-3 py-1.5 rounded text-sm font-medium transition ${activeTab === 'online' ? 'bg-[#404249] text-white' : 'text-gray-400 hover:text-white hover:bg-[#35373c]'}`}
         >
           Online
         </button>
         <button
           onClick={() => setActiveTab('all')}
-          className={`px-3 py-1 rounded ${activeTab === 'all' ? 'bg-discord-gray text-white' : 'text-gray-400 hover:text-white'}`}
+          className={`px-3 py-1.5 rounded text-sm font-medium transition ${activeTab === 'all' ? 'bg-[#404249] text-white' : 'text-gray-400 hover:text-white hover:bg-[#35373c]'}`}
         >
           All
         </button>
         <button
           onClick={() => setActiveTab('pending')}
-          className={`px-3 py-1 rounded ${activeTab === 'pending' ? 'bg-discord-gray text-white' : 'text-gray-400 hover:text-white'}`}
+          className={`px-3 py-1.5 rounded text-sm font-medium transition ${activeTab === 'pending' ? 'bg-[#404249] text-white' : 'text-gray-400 hover:text-white hover:bg-[#35373c]'}`}
         >
           Pending {pendingRequests.length > 0 && `(${pendingRequests.length})`}
         </button>
         <button
           onClick={() => setActiveTab('add')}
-          className={`px-3 py-1 rounded ${activeTab === 'add' ? 'bg-green-600 text-white' : 'bg-green-600/20 text-green-400 hover:bg-green-600/30'}`}
+          className={`px-3 py-1.5 rounded text-sm font-medium transition ${activeTab === 'add' ? 'bg-[#23a559] text-white' : 'bg-[#23a559]/20 text-[#23a559] hover:bg-[#23a559]/30'}`}
         >
           Add Friend
         </button>
@@ -88,7 +125,39 @@ export default function FriendsList() {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4">
-        {activeTab === 'add' ? (
+        {activeTab === 'messages' ? (
+          <div className="space-y-2">
+            <h3 className="text-gray-400 text-sm font-semibold uppercase mb-2">
+              Direct Messages — {dmConversations.length}
+            </h3>
+            {dmConversations.length === 0 ? (
+              <div className="text-center py-12">
+                <ChatBubbleLeftIcon className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-400">No messages yet</p>
+                <p className="text-sm text-gray-500 mt-1">Start a conversation with a friend!</p>
+              </div>
+            ) : (
+              dmConversations.map(conversation => (
+                <button
+                  key={conversation.id}
+                  onClick={() => handleOpenDM(conversation.otherUserId)}
+                  className="w-full flex items-center gap-3 p-3 bg-discord-darker rounded-lg hover:bg-discord-gray transition group"
+                >
+                  <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-semibold">
+                    U
+                  </div>
+                  <div className="flex-1 text-left min-w-0">
+                    <p className="text-white font-medium truncate">User {conversation.otherUserId.substring(0, 8)}</p>
+                    <p className="text-sm text-gray-400 truncate">{conversation.lastMessage}</p>
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {new Date(conversation.lastMessageAt).toLocaleDateString()}
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
+        ) : activeTab === 'add' ? (
           <div className="max-w-2xl">
             <h3 className="text-white font-semibold mb-2">Add Friend</h3>
             <p className="text-gray-400 text-sm mb-4">
@@ -184,10 +253,12 @@ export default function FriendsList() {
                     </div>
                   </div>
                   <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition">
-                    <button className="p-2 bg-discord-gray text-white rounded hover:bg-discord-darkest transition" title="Message">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
+                    <button 
+                      onClick={() => handleOpenDM(friend.id)}
+                      className="p-2 bg-discord-gray text-white rounded hover:bg-discord-darkest transition" 
+                      title="Message"
+                    >
+                      <ChatBubbleLeftIcon className="w-5 h-5" />
                     </button>
                     <button className="p-2 bg-discord-gray text-white rounded hover:bg-discord-darkest transition" title="More">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

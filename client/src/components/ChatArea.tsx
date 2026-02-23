@@ -131,7 +131,7 @@ export default function ChatArea() {
   return (
     <div className="flex-1 flex flex-col bg-[#313338] relative">
       {/* Channel Header */}
-      <div className="h-12 px-4 flex items-center justify-between border-b border-[#26272b] bg-[#313338]">
+      <div className="h-12 px-4 flex items-center justify-between border-b border-[#26272b] bg-[#313338] shadow-sm">
         <div className="flex items-center gap-2">
           <HashtagIcon className="w-5 h-5 text-[#80848e]" />
           <h2 className="font-semibold text-white text-[15px]">{currentChannel.name}</h2>
@@ -170,17 +170,6 @@ export default function ChatArea() {
             title="Search Messages (Ctrl+K)"
           >
             <MagnifyingGlassIcon className="w-5 h-5" />
-          </button>
-          <div className="w-px h-6 bg-[#3f4147]" />
-          <button className="p-2 text-[#b5bac1] hover:text-white hover:bg-[#404249] rounded transition" title="Notification Settings">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
-            </svg>
-          </button>
-          <button className="p-2 text-[#b5bac1] hover:text-white hover:bg-[#404249] rounded transition" title="Members">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-            </svg>
           </button>
         </div>
       </div>
@@ -409,12 +398,12 @@ export default function ChatArea() {
       </div>
 
       {/* Message Input */}
-      <div className="px-4 pb-6">
+      <div className="px-4 pb-6 pt-2">
         <form onSubmit={handleSendMessage} className="relative">
-          <div className="flex items-center gap-2 px-4 py-3 bg-[#383a40] rounded-lg">
+          <div className="flex items-center gap-3 px-4 py-3 bg-[#383a40] rounded-lg hover:bg-[#40444b] transition-colors">
             <button
               type="button"
-              className="text-[#b5bac1] hover:text-white transition"
+              className="text-[#b5bac1] hover:text-white transition flex-shrink-0"
               title="Add attachment"
             >
               <PlusIcon className="w-6 h-6" />
@@ -426,7 +415,7 @@ export default function ChatArea() {
               placeholder={`Message #${currentChannel.name}`}
               className="flex-1 bg-transparent text-white text-[15px] placeholder-[#6d6f78] focus:outline-none"
             />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <button
                 type="button"
                 className="text-[#b5bac1] hover:text-white transition"
@@ -442,6 +431,15 @@ export default function ChatArea() {
               >
                 <FaceSmileIcon className="w-6 h-6" />
               </button>
+              {messageInput.trim() && (
+                <button
+                  type="submit"
+                  className="ml-2 p-2 bg-[#5865f2] text-white rounded-full hover:bg-[#4752c4] transition-all transform hover:scale-105"
+                  title="Send message"
+                >
+                  <PaperAirplaneIcon className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         </form>

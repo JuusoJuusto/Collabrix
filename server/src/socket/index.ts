@@ -191,12 +191,17 @@ export const setupSocketHandlers = (io: Server) => {
 
     socket.on('dm:send', async (data: { receiverId: string; content: string }) => {
       try {
+        // Create conversation ID (sorted user IDs)
+        const conversationId = [socket.userId!, data.receiverId].sort().join('_');
+        
+        // Store message in Realtime Database would be better, but for now use Firestore
         const dmRef = db.collection('directMessages').doc();
         const dmData = {
           id: dmRef.id,
           senderId: socket.userId!,
           receiverId: data.receiverId,
           content: data.content,
+          conversationId,
           participants: [socket.userId!, data.receiverId],
           read: false,
           createdAt: new Date().toISOString()
@@ -210,9 +215,17 @@ export const setupSocketHandlers = (io: Server) => {
           sender: { id: senderDoc.id, ...senderDoc.data() }
         };
 
+        // Emit to both sender and receiver
         socket.emit('dm:new', dm);
-        io.to(data.receiverId).emit('dm:new', dm);
+        
+        // Find receiver's socket and emit to them
+        const sockets = await io.fetchSockets();
+        const receiverSocket = sockets.find((s: any) => s.userId === data.receiverId);
+        if (receiverSocket) {
+          receiverSocket.emit('dm:new', dm);
+        }
       } catch (error) {
+        console.error('DM send error:', error);
         socket.emit('error', { message: 'Failed to send DM' });
       }
     });

@@ -279,9 +279,141 @@ export const userAPI = {
 
 export const dmAPI = {
   getAll: async () => {
-    return [];
+    if (!useFirebaseDirectly) return [];
+    
+    const user = auth.currentUser;
+    if (!user) return [];
+
+    try {
+      // Get DMs from Realtime Database
+      const dmsRef = ref(realtimeDb, `directMessages/${user.uid}`);
+      const snapshot = await get(dmsRef);
+      
+      const conversations: any[] = [];
+      snapshot.forEach((childSnapshot) => {
+        conversations.push({
+          id: childSnapshot.key,
+          ...childSnapshot.val()
+        });
+      });
+      
+      return conversations;
+    } catch (error) {
+      return [];
+    }
   },
+
+  // Subscribe to real-time DMs
+  subscribeToDMs: (userId: string, callback: (messages: any[]) => void) => {
+    const dmsRef = ref(realtimeDb, `directMessages/${userId}`);
+    
+    const unsubscribe = onValue(dmsRef, (snapshot) => {
+      const messages: any[] = [];
+      snapshot.forEach((childSnapshot) => {
+        messages.push({
+          id: childSnapshot.key,
+          ...childSnapshot.val()
+        });
+      });
+      callback(messages);
+    });
+    
+    return () => off(dmsRef);
+  },
+
+  // Get messages for a specific DM conversation
+  getMessages: async (otherUserId: string, limit = 50) => {
+    const user = auth.currentUser;
+    if (!user) return [];
+
+    try {
+      const conversationId = [user.uid, otherUserId].sort().join('_');
+      const messagesRef = ref(realtimeDb, `dmMessages/${conversationId}`);
+      const messagesQuery = rtQuery(messagesRef, orderByChild('createdAt'), limitToLast(limit));
+      
+      const snapshot = await get(messagesQuery);
+      const messages: any[] = [];
+      
+      snapshot.forEach((childSnapshot) => {
+        messages.push({
+          id: childSnapshot.key,
+          ...childSnapshot.val()
+        });
+      });
+      
+      return messages;
+    } catch (error) {
+      return [];
+    }
+  },
+
+  // Subscribe to messages in a DM conversation
+  subscribeToConversation: (otherUserId: string, callback: (messages: any[]) => void) => {
+    const user = auth.currentUser;
+    if (!user) return () => {};
+
+    const conversationId = [user.uid, otherUserId].sort().join('_');
+    const messagesRef = ref(realtimeDb, `dmMessages/${conversationId}`);
+    const messagesQuery = rtQuery(messagesRef, orderByChild('createdAt'), limitToLast(50));
+    
+    const unsubscribe = onValue(messagesQuery, (snapshot) => {
+      const messages: any[] = [];
+      snapshot.forEach((childSnapshot) => {
+        messages.push({
+          id: childSnapshot.key,
+          ...childSnapshot.val()
+        });
+      });
+      callback(messages);
+    });
+    
+    return () => off(messagesRef);
+  },
+
   send: async (data: { receiverId: string; content: string }) => {
-    return { message: 'Message sent' };
+    if (!useFirebaseDirectly) throw new Error('DM sending requires Firebase');
+    
+    const user = auth.currentUser;
+    if (!user) throw new Error('Not authenticated');
+
+    const conversationId = [user.uid, data.receiverId].sort().join('_');
+    const messagesRef = ref(realtimeDb, `dmMessages/${conversationId}`);
+    const newMessageRef = push(messagesRef);
+    
+    const message = {
+      content: data.content,
+      senderId: user.uid,
+      receiverId: data.receiverId,
+      author: {
+        id: user.uid,
+        username: user.email?.split('@')[0] || 'user',
+        displayName: user.displayName || user.email?.split('@')[0] || 'User',
+        avatar: user.photoURL || null
+      },
+      createdAt: Date.now(),
+      read: false
+    };
+
+    // Write to Realtime Database
+    await set(newMessageRef, message);
+
+    // Update conversation metadata for both users
+    const conversationData = {
+      lastMessage: data.content,
+      lastMessageAt: Date.now(),
+      participants: [user.uid, data.receiverId]
+    };
+
+    await set(ref(realtimeDb, `directMessages/${user.uid}/${data.receiverId}`), {
+      ...conversationData,
+      otherUserId: data.receiverId
+    });
+
+    await set(ref(realtimeDb, `directMessages/${data.receiverId}/${user.uid}`), {
+      ...conversationData,
+      otherUserId: user.uid
+    });
+
+    return { id: newMessageRef.key, ...message };
   }
 };
