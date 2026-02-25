@@ -181,44 +181,45 @@ export default function ChatArea() {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-[#313338] relative">
-      {/* Channel Header */}
-      <div className="h-12 px-4 flex items-center justify-between border-b border-[#26272b] bg-[#313338] shadow-sm">
-        <div className="flex items-center gap-2">
-          <HashtagIcon className="w-5 h-5 text-[#80848e]" />
-          <h2 className="font-semibold text-white text-[15px]">{currentChannel.name}</h2>
-          {currentChannel.topic && (
-            <>
-              <div className="w-px h-5 bg-[#3f4147]" />
-              <p className="text-sm text-[#b5bac1]">{currentChannel.topic}</p>
-            </>
-          )}
+    <div className="flex-1 flex flex-col bg-gradient-to-b from-[#2e3035] to-[#313338] relative">
+      {/* Channel Header with gradient */}
+      <div className="h-14 px-4 flex items-center justify-between border-b border-[#26272b]/50 bg-gradient-to-r from-[#2b2d31] to-[#313338] shadow-lg backdrop-blur-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5865f2] to-[#7289da] flex items-center justify-center shadow-lg">
+            <HashtagIcon className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h2 className="font-bold text-white text-base">{currentChannel.name}</h2>
+            {currentChannel.topic && (
+              <p className="text-xs text-[#949ba4]">{currentChannel.topic}</p>
+            )}
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <button 
             onClick={() => setShowEvents(!showEvents)}
-            className={`p-2 rounded transition ${showEvents ? 'bg-[#404249] text-white' : 'text-[#b5bac1] hover:text-white hover:bg-[#404249]'}`}
+            className={`p-2.5 rounded-xl transition-all ${showEvents ? 'bg-[#5865f2] text-white shadow-lg' : 'text-[#b5bac1] hover:text-white hover:bg-[#404249]'}`}
             title="Events Calendar (Ctrl+E)"
           >
             <CalendarIcon className="w-5 h-5" />
           </button>
           <button 
             onClick={() => setShowPinned(!showPinned)}
-            className={`p-2 rounded transition relative ${showPinned ? 'bg-[#404249] text-white' : 'text-[#b5bac1] hover:text-white hover:bg-[#404249]'}`}
+            className={`p-2.5 rounded-xl transition-all relative ${showPinned ? 'bg-[#5865f2] text-white shadow-lg' : 'text-[#b5bac1] hover:text-white hover:bg-[#404249]'}`}
             title="Pinned Messages (Ctrl+P)"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
             </svg>
             {pinnedMessages.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#f23f43] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-[#f23f43] to-[#d32f2f] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg animate-pulse">
                 {pinnedMessages.length}
               </span>
             )}
           </button>
           <button 
             onClick={() => setShowSearch(!showSearch)}
-            className={`p-2 rounded transition ${showSearch ? 'bg-[#404249] text-white' : 'text-[#b5bac1] hover:text-white hover:bg-[#404249]'}`}
+            className={`p-2.5 rounded-xl transition-all ${showSearch ? 'bg-[#5865f2] text-white shadow-lg' : 'text-[#b5bac1] hover:text-white hover:bg-[#404249]'}`}
             title="Search Messages (Ctrl+K)"
           >
             <MagnifyingGlassIcon className="w-5 h-5" />
@@ -337,22 +338,26 @@ export default function ChatArea() {
         </div>
       )}
 
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">
+      {/* Messages Area with custom scrollbar */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 custom-scrollbar">
         {filteredMessages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
             {searchQuery ? (
               <>
-                <MagnifyingGlassIcon className="w-12 h-12 text-[#4e5058] mb-3" />
-                <p className="text-[#b5bac1] text-sm">No messages found for "{searchQuery}"</p>
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#5865f2]/20 to-[#7289da]/20 flex items-center justify-center mb-4">
+                  <MagnifyingGlassIcon className="w-10 h-10 text-[#5865f2]" />
+                </div>
+                <p className="text-[#b5bac1] text-base font-medium">No messages found for "{searchQuery}"</p>
+                <p className="text-[#949ba4] text-sm mt-2">Try different keywords</p>
               </>
             ) : (
               <>
-                <div className="w-16 h-16 rounded-full bg-[#5865f2] flex items-center justify-center mb-4">
-                  <HashtagIcon className="w-8 h-8 text-white" />
+                <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-[#5865f2] to-[#7289da] flex items-center justify-center mb-6 shadow-2xl animate-pulse">
+                  <HashtagIcon className="w-12 h-12 text-white" />
                 </div>
-                <h3 className="text-white font-bold text-2xl mb-2">Welcome to #{currentChannel.name}!</h3>
-                <p className="text-[#b5bac1] text-sm">This is the start of the #{currentChannel.name} channel.</p>
+                <h3 className="text-white font-bold text-3xl mb-3">Welcome to #{currentChannel.name}!</h3>
+                <p className="text-[#b5bac1] text-base">This is the start of the #{currentChannel.name} channel.</p>
+                <p className="text-[#949ba4] text-sm mt-2">Be the first to send a message!</p>
               </>
             )}
           </div>
@@ -367,26 +372,32 @@ export default function ChatArea() {
               const isPinned = pinnedMessages.some(p => p.id === message.id);
 
               return (
-                <div key={message.id} className={`group hover:bg-[#2e3035] px-4 py-0.5 -mx-4 relative ${showHeader ? 'mt-4' : ''}`}>
+                <div key={message.id} className={`group hover:bg-[#2e3035]/50 px-4 py-2 -mx-4 relative rounded-lg transition-all ${showHeader ? 'mt-4' : ''}`}>
                   {showHeader ? (
                     <div className="flex gap-4">
-                      <div className="w-10 h-10 rounded-full bg-[#5865f2] flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm">
-                        {message.author?.avatar ? (
-                          <img src={message.author.avatar} alt="" className="w-full h-full rounded-full" />
-                        ) : (
-                          message.author?.username?.substring(0, 2).toUpperCase() || '??'
-                        )}
+                      <div className="relative flex-shrink-0">
+                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#5865f2] to-[#7289da] flex items-center justify-center text-white font-bold shadow-lg text-sm">
+                          {message.author?.avatar ? (
+                            <img src={message.author.avatar} alt="" className="w-full h-full rounded-xl" />
+                          ) : (
+                            message.author?.username?.substring(0, 2).toUpperCase() || '??'
+                          )}
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#23a559] rounded-full border-2 border-[#313338]" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-baseline gap-2 mb-0.5">
-                          <span className="font-medium text-white text-[15px] hover:underline cursor-pointer">
+                        <div className="flex items-center gap-3 mb-1">
+                          <span className="font-bold text-white text-base hover:underline cursor-pointer">
                             {message.author?.displayName || 'Unknown'}
+                          </span>
+                          <span className="px-2 py-0.5 bg-[#5865f2]/20 text-[#5865f2] text-xs rounded-md font-medium">
+                            Member
                           </span>
                           <span className="text-xs text-[#949ba4]">
                             {format(new Date(message.createdAt), 'MMM d, yyyy h:mm a')}
                           </span>
                           {isPinned && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#5865f2]/20 text-[#5865f2] text-xs rounded">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#f23f43]/20 text-[#f23f43] text-xs rounded-md font-medium">
                               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
                               </svg>
@@ -394,7 +405,7 @@ export default function ChatArea() {
                             </span>
                           )}
                         </div>
-                        <p className="text-[#dbdee1] text-[15px] leading-[1.375rem] break-words">{message.content}</p>
+                        <p className="text-[#dbdee1] text-base leading-relaxed break-words">{message.content}</p>
                       </div>
                       <div className="opacity-0 group-hover:opacity-100 transition flex items-center gap-1">
                         {/* Upvote/Downvote (Reddit style) */}
@@ -521,31 +532,33 @@ export default function ChatArea() {
         )}
       </div>
 
-      {/* Message Input */}
-      <div className="px-4 pb-6 pt-2">
+      {/* Message Input with modern design */}
+      <div className="px-4 pb-6 pt-3 bg-gradient-to-t from-[#2b2d31] to-transparent">
         {/* Reply indicator */}
         {replyingTo && (
-          <div className="mb-2 px-4 py-2 bg-[#2b2d31] rounded-t-lg flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm">
-              <svg className="w-4 h-4 text-[#b5bac1]" fill="currentColor" viewBox="0 0 20 20">
+          <div className="mb-3 px-4 py-3 bg-gradient-to-r from-[#5865f2]/10 to-[#7289da]/10 rounded-xl flex items-center justify-between border-l-4 border-[#5865f2]">
+            <div className="flex items-center gap-3 text-sm">
+              <svg className="w-5 h-5 text-[#5865f2]" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
-              <span className="text-[#b5bac1]">Replying to</span>
-              <span className="text-white font-medium">{replyingTo.author.displayName}</span>
-              <span className="text-[#949ba4] truncate max-w-xs">"{replyingTo.content}"</span>
+              <div>
+                <span className="text-[#949ba4] text-xs">Replying to</span>
+                <span className="text-white font-semibold ml-2">{replyingTo.author.displayName}</span>
+                <p className="text-[#b5bac1] text-sm truncate max-w-md mt-0.5">"{replyingTo.content}"</p>
+              </div>
             </div>
             <button
               onClick={() => setReplyingTo(null)}
-              className="text-[#b5bac1] hover:text-white transition"
+              className="text-[#b5bac1] hover:text-white transition p-1 hover:bg-[#404249] rounded-lg"
             >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
             </button>
           </div>
         )}
         <form onSubmit={handleSendMessage} className="relative">
-          <div className={`flex items-center gap-3 px-4 py-3 bg-[#383a40] ${replyingTo ? 'rounded-b-lg' : 'rounded-lg'} hover:bg-[#40444b] transition-colors`}>
+          <div className={`flex items-center gap-3 px-5 py-4 bg-[#383a40] ${replyingTo ? 'rounded-xl' : 'rounded-2xl'} hover:bg-[#40444b] transition-all shadow-lg border border-[#404249]/50`}>
             <button
               type="button"
               className="text-[#b5bac1] hover:text-white transition flex-shrink-0"
@@ -579,10 +592,10 @@ export default function ChatArea() {
               {messageInput.trim() && (
                 <button
                   type="submit"
-                  className="ml-2 p-2 bg-[#5865f2] text-white rounded-full hover:bg-[#4752c4] transition-all transform hover:scale-105"
+                  className="ml-2 p-3 bg-gradient-to-br from-[#5865f2] to-[#7289da] text-white rounded-xl hover:from-[#4752c4] hover:to-[#5865f2] transition-all transform hover:scale-105 shadow-lg"
                   title="Send message"
                 >
-                  <PaperAirplaneIcon className="w-4 h-4" />
+                  <PaperAirplaneIcon className="w-5 h-5" />
                 </button>
               )}
             </div>
