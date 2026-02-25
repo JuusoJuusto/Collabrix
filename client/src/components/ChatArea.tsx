@@ -96,12 +96,13 @@ export default function ChatArea() {
     try {
       await channelAPI.sendMessage(currentChannel.id, messageInput.trim());
       setMessageInput('');
+      setReplyingTo(null);
       
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
     } catch (error) {
-      // Message send failed
+      console.error('Failed to send message:', error);
     }
   };
 
@@ -509,7 +510,23 @@ export default function ChatArea() {
                         </span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[#dbdee1] text-[15px] leading-[1.375rem] break-words">{message.content}</p>
+                        <p className="text-[#dbdee1] text-base leading-relaxed break-words whitespace-pre-wrap">{message.content}</p>
+                        
+                        {/* Reactions Display - Compact */}
+                        {message.reactions && message.reactions.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {message.reactions.map((reaction, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => handleReaction(message.id, reaction.emoji)}
+                                className="flex items-center gap-1 px-2 py-0.5 bg-[#2b2d31] hover:bg-[#404249] rounded-full text-xs transition-all transform hover:scale-105"
+                              >
+                                <span>{reaction.emoji}</span>
+                                <span className="text-[#b5bac1]">{reaction.count}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <div className="opacity-0 group-hover:opacity-100 transition flex items-center gap-1">
                         <button
@@ -528,6 +545,22 @@ export default function ChatArea() {
               );
             })}
             <div ref={messagesEndRef} />
+            
+            {/* Typing Indicator */}
+            {typingUsers[currentChannel?.id || ''] && typingUsers[currentChannel?.id || ''].length > 0 && (
+              <div className="flex items-center gap-3 px-4 py-2 animate-slide-in">
+                <div className="flex gap-1">
+                  <div className="w-2 h-2 bg-[#5865f2] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 bg-[#5865f2] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className="w-2 h-2 bg-[#5865f2] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+                <span className="text-sm text-[#949ba4]">
+                  {typingUsers[currentChannel?.id || ''].length === 1 
+                    ? 'Someone is typing...'
+                    : `${typingUsers[currentChannel?.id || ''].length} people are typing...`}
+                </span>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -570,13 +603,20 @@ export default function ChatArea() {
               type="text"
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage(e);
+                }
+              }}
               placeholder={`Message #${currentChannel.name}`}
-              className="flex-1 bg-transparent text-white text-[15px] placeholder-[#6d6f78] focus:outline-none"
+              className="flex-1 bg-transparent text-white text-base placeholder-[#6d6f78] focus:outline-none resize-none"
+              style={{ minHeight: '24px', maxHeight: '200px' }}
             />
             <div className="flex items-center gap-2 flex-shrink-0">
               <button
                 type="button"
-                className="text-[#b5bac1] hover:text-white transition"
+                className="text-[#b5bac1] hover:text-white transition p-1.5 hover:bg-[#404249] rounded-lg"
                 title="Add GIF"
               >
                 <GifIcon className="w-6 h-6" />
@@ -584,16 +624,34 @@ export default function ChatArea() {
               <button
                 type="button"
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                className="text-[#b5bac1] hover:text-white transition"
+                className="text-[#b5bac1] hover:text-white transition p-1.5 hover:bg-[#404249] rounded-lg relative"
                 title="Add emoji"
               >
                 <FaceSmileIcon className="w-6 h-6" />
+                {showEmojiPicker && (
+                  <div className="absolute bottom-full right-0 mb-2 bg-[#2b2d31] rounded-xl shadow-2xl p-3 border border-[#404249] z-50">
+                    <div className="grid grid-cols-8 gap-2">
+                      {quickReactions.map(emoji => (
+                        <button
+                          key={emoji}
+                          onClick={() => {
+                            setMessageInput(messageInput + emoji);
+                            setShowEmojiPicker(false);
+                          }}
+                          className="w-10 h-10 hover:bg-[#404249] rounded-lg flex items-center justify-center text-2xl transition transform hover:scale-125"
+                        >
+                          {emoji}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </button>
               {messageInput.trim() && (
                 <button
                   type="submit"
-                  className="ml-2 p-3 bg-gradient-to-br from-[#5865f2] to-[#7289da] text-white rounded-xl hover:from-[#4752c4] hover:to-[#5865f2] transition-all transform hover:scale-105 shadow-lg"
-                  title="Send message"
+                  className="ml-2 p-3 bg-gradient-to-br from-[#5865f2] to-[#7289da] text-white rounded-xl hover:from-[#4752c4] hover:to-[#5865f2] transition-all transform hover:scale-105 shadow-lg hover:shadow-[#5865f2]/50"
+                  title="Send message (Enter)"
                 >
                   <PaperAirplaneIcon className="w-5 h-5" />
                 </button>
