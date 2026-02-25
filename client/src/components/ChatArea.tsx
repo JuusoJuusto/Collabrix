@@ -4,6 +4,29 @@ import { channelAPI } from '../lib/api';
 import { format } from 'date-fns';
 import { PaperAirplaneIcon, HashtagIcon, PlusIcon, FaceSmileIcon, GifIcon, MagnifyingGlassIcon, CalendarIcon } from '@heroicons/react/24/solid';
 
+interface Message {
+  id: string;
+  content: string;
+  channelId: string;
+  authorId: string;
+  author: {
+    id: string;
+    username: string;
+    displayName: string;
+    avatar?: string;
+  };
+  replyToId?: string;
+  replyTo?: any;
+  edited: boolean;
+  createdAt: string;
+  reactions?: { emoji: string; users: string[]; count: number }[];
+  attachments?: any[];
+  upvotes?: number;
+  downvotes?: number;
+  threadCount?: number;
+  isPinned?: boolean;
+}
+
 export default function ChatArea() {
   const { currentChannel, messages, setMessages } = useChatStore();
   const [messageInput, setMessageInput] = useState('');
@@ -13,8 +36,12 @@ export default function ChatArea() {
   const [showPinned, setShowPinned] = useState(false);
   const [showEvents, setShowEvents] = useState(false);
   const [pinnedMessages, setPinnedMessages] = useState<any[]>([]);
+  const [replyingTo, setReplyingTo] = useState<Message | null>(null);
+  const [showReactions, setShowReactions] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
+
+  const quickReactions = ['👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👀'];
 
   useEffect(() => {
     if (!currentChannel) return;
@@ -91,6 +118,31 @@ export default function ChatArea() {
 
   const handleUnpinMessage = (messageId: string) => {
     setPinnedMessages(pinnedMessages.filter(p => p.id !== messageId));
+  };
+
+  const handleReaction = (messageId: string, emoji: string) => {
+    // Add reaction logic here
+    console.log('Reaction:', emoji, 'to message:', messageId);
+    setShowReactions(null);
+  };
+
+  const handleUpvote = (messageId: string) => {
+    // Upvote logic
+    console.log('Upvote message:', messageId);
+  };
+
+  const handleDownvote = (messageId: string) => {
+    // Downvote logic
+    console.log('Downvote message:', messageId);
+  };
+
+  const handleReply = (message: Message) => {
+    setReplyingTo(message);
+  };
+
+  const handleStartThread = (messageId: string) => {
+    // Thread logic
+    console.log('Start thread for:', messageId);
   };
 
   const filteredMessages = searchQuery
@@ -345,6 +397,81 @@ export default function ChatArea() {
                         <p className="text-[#dbdee1] text-[15px] leading-[1.375rem] break-words">{message.content}</p>
                       </div>
                       <div className="opacity-0 group-hover:opacity-100 transition flex items-center gap-1">
+                        {/* Upvote/Downvote (Reddit style) */}
+                        <div className="flex items-center gap-0.5 bg-[#2b2d31] rounded px-1">
+                          <button
+                            onClick={() => handleUpvote(message.id)}
+                            className="p-1 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-[#23a559] transition"
+                            title="Upvote"
+                          >
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                          <span className="text-xs text-[#b5bac1] font-medium min-w-[20px] text-center">
+                            {(message.upvotes || 0) - (message.downvotes || 0)}
+                          </span>
+                          <button
+                            onClick={() => handleDownvote(message.id)}
+                            className="p-1 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-[#f23f43] transition"
+                            title="Downvote"
+                          >
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
+                        
+                        {/* Quick Reactions (Discord style) */}
+                        <div className="relative">
+                          <button
+                            onClick={() => setShowReactions(showReactions === message.id ? null : message.id)}
+                            className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition"
+                            title="Add reaction"
+                          >
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                          {showReactions === message.id && (
+                            <div className="absolute bottom-full mb-2 left-0 bg-[#2b2d31] rounded-lg shadow-xl p-2 flex gap-1 z-10 border border-[#404249]">
+                              {quickReactions.map(emoji => (
+                                <button
+                                  key={emoji}
+                                  onClick={() => handleReaction(message.id, emoji)}
+                                  className="w-8 h-8 hover:bg-[#404249] rounded flex items-center justify-center text-lg transition transform hover:scale-125"
+                                >
+                                  {emoji}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Thread (Slack style) */}
+                        <button
+                          onClick={() => handleStartThread(message.id)}
+                          className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition"
+                          title="Start thread"
+                        >
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+                          </svg>
+                        </button>
+
+                        {/* Reply */}
+                        <button
+                          onClick={() => handleReply(message)}
+                          className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition"
+                          title="Reply"
+                        >
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+
+                        {/* Pin */}
                         <button
                           onClick={() => isPinned ? handleUnpinMessage(message.id) : handlePinMessage(message.id)}
                           className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition"
@@ -354,11 +481,8 @@ export default function ChatArea() {
                             <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
                           </svg>
                         </button>
-                        <button className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition" title="Reply">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        </button>
+
+                        {/* More */}
                         <button className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition" title="More">
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
@@ -399,8 +523,29 @@ export default function ChatArea() {
 
       {/* Message Input */}
       <div className="px-4 pb-6 pt-2">
+        {/* Reply indicator */}
+        {replyingTo && (
+          <div className="mb-2 px-4 py-2 bg-[#2b2d31] rounded-t-lg flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm">
+              <svg className="w-4 h-4 text-[#b5bac1]" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              <span className="text-[#b5bac1]">Replying to</span>
+              <span className="text-white font-medium">{replyingTo.author.displayName}</span>
+              <span className="text-[#949ba4] truncate max-w-xs">"{replyingTo.content}"</span>
+            </div>
+            <button
+              onClick={() => setReplyingTo(null)}
+              className="text-[#b5bac1] hover:text-white transition"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        )}
         <form onSubmit={handleSendMessage} className="relative">
-          <div className="flex items-center gap-3 px-4 py-3 bg-[#383a40] rounded-lg hover:bg-[#40444b] transition-colors">
+          <div className={`flex items-center gap-3 px-4 py-3 bg-[#383a40] ${replyingTo ? 'rounded-b-lg' : 'rounded-lg'} hover:bg-[#40444b] transition-colors`}>
             <button
               type="button"
               className="text-[#b5bac1] hover:text-white transition flex-shrink-0"

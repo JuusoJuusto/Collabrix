@@ -15,8 +15,12 @@ interface Message {
   replyTo?: any;
   edited: boolean;
   createdAt: string;
-  reactions?: any[];
+  reactions?: { emoji: string; users: string[]; count: number }[];
   attachments?: any[];
+  upvotes?: number;
+  downvotes?: number;
+  threadCount?: number;
+  isPinned?: boolean;
 }
 
 interface Channel {
