@@ -38,6 +38,7 @@ export default function ChatArea() {
   const [pinnedMessages, setPinnedMessages] = useState<any[]>([]);
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [showReactions, setShowReactions] = useState<string | null>(null);
+  const [typingUsers, setTypingUsers] = useState<Record<string, string[]>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
 
