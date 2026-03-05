@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useChatStore } from '../store/chatStore';
 import { channelAPI } from '../lib/api';
 import { format } from 'date-fns';
-import { PaperAirplaneIcon, HashtagIcon, PlusIcon, FaceSmileIcon, GifIcon, MagnifyingGlassIcon, CalendarIcon } from '@heroicons/react/24/solid';
+import { PaperAirplaneIcon, HashtagIcon, PlusIcon, FaceSmileIcon, GifIcon, MagnifyingGlassIcon, CalendarIcon, BoltIcon, SparklesIcon, FireIcon, HeartIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/solid';
 
 interface Message {
   id: string;
@@ -14,6 +14,8 @@ interface Message {
     username: string;
     displayName: string;
     avatar?: string;
+    status?: 'online' | 'away' | 'busy' | 'offline';
+    customStatus?: string;
   };
   replyToId?: string;
   replyTo?: any;
@@ -25,6 +27,8 @@ interface Message {
   downvotes?: number;
   threadCount?: number;
   isPinned?: boolean;
+  isImportant?: boolean;
+  mood?: 'happy' | 'sad' | 'excited' | 'angry' | 'neutral';
 }
 
 export default function ChatArea() {
@@ -35,14 +39,26 @@ export default function ChatArea() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showPinned, setShowPinned] = useState(false);
   const [showEvents, setShowEvents] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [pinnedMessages, setPinnedMessages] = useState<any[]>([]);
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [showReactions, setShowReactions] = useState<string | null>(null);
   const [typingUsers, setTypingUsers] = useState<Record<string, string[]>>({});
+  const [messageMood, setMessageMood] = useState<'happy' | 'sad' | 'excited' | 'angry' | 'neutral'>('neutral');
+  const [isImportant, setIsImportant] = useState(false);
+  const [showPoll, setShowPoll] = useState(false);
+  const [pollOptions, setPollOptions] = useState<string[]>(['', '']);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
 
-  const quickReactions = ['👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👀'];
+  const quickReactions = ['👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👀', '💯', '✨'];
+  const moodEmojis = {
+    happy: '😊',
+    sad: '😢',
+    excited: '🎉',
+    angry: '😠',
+    neutral: '😐'
+  };
 
   useEffect(() => {
     if (!currentChannel) return;
@@ -63,601 +79,471 @@ export default function ChatArea() {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      // Ctrl+K: Quick search
       if (e.ctrlKey && e.key === 'k') {
         e.preventDefault();
         setShowSearch(!showSearch);
       }
-      // Ctrl+P: Show pinned messages
       if (e.ctrlKey && e.key === 'p') {
         e.preventDefault();
         setShowPinned(!showPinned);
       }
-      // Ctrl+E: Show events
       if (e.ctrlKey && e.key === 'e') {
         e.preventDefault();
         setShowEvents(!showEvents);
       }
-      // Escape: Close modals
+      if (e.ctrlKey && e.key === 'i') {
+        e.preventDefault();
+        setIsImportant(!isImportant);
+      }
       if (e.key === 'Escape') {
         setShowSearch(false);
         setShowPinned(false);
         setShowEvents(false);
+        setShowAIAssistant(false);
+        setShowPoll(false);
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [showSearch, showPinned, showEvents]);
+  }, [showSearch, showPinned, showEvents, isImportant, showAIAssistant, showPoll]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!messageInput.trim() || !currentChannel) return;
 
     try {
-      await channelAPI.sendMessage(currentChannel.id, messageInput.trim());
+      const messageData = {
+        content: messageInput.trim(),
+        mood: messageMood,
+        isImportant,
+        replyToId: replyingTo?.id
+      };
+      
+      await channelAPI.sendMessage(currentChannel.id, messageData);
       setMessageInput('');
       setReplyingTo(null);
-      
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
+      setMessageMood('neutral');
+      setIsImportant(false);
     } catch (error) {
       console.error('Failed to send message:', error);
     }
   };
 
-  // Get channel messages first before using them
-  const channelMessages = messages[currentChannel?.id || ''] || [];
-
-  const handlePinMessage = (messageId: string) => {
-    // Add to pinned messages
-    const message = channelMessages.find(m => m.id === messageId);
-    if (message && !pinnedMessages.find(p => p.id === messageId)) {
-      setPinnedMessages([...pinnedMessages, { ...message, pinnedAt: new Date().toISOString() }]);
+  const handleReaction = async (messageId: string, emoji: string) => {
+    try {
+      await channelAPI.addReaction(currentChannel?.id || '', messageId, emoji);
+    } catch (error) {
+      console.error('Failed to add reaction:', error);
     }
   };
 
-  const handleUnpinMessage = (messageId: string) => {
-    setPinnedMessages(pinnedMessages.filter(p => p.id !== messageId));
+  const handleUpvote = async (messageId: string) => {
+    try {
+      await channelAPI.upvoteMessage(currentChannel?.id || '', messageId);
+    } catch (error) {
+      console.error('Failed to upvote:', error);
+    }
   };
 
-  const handleReaction = (messageId: string, emoji: string) => {
-    // Add reaction logic here
-    console.log('Reaction:', emoji, 'to message:', messageId);
-    setShowReactions(null);
+  const handleDownvote = async (messageId: string) => {
+    try {
+      await channelAPI.downvoteMessage(currentChannel?.id || '', messageId);
+    } catch (error) {
+      console.error('Failed to downvote:', error);
+    }
   };
 
-  const handleUpvote = (messageId: string) => {
-    // Upvote logic
-    console.log('Upvote message:', messageId);
+  const handlePinMessage = async (messageId: string) => {
+    try {
+      await channelAPI.pinMessage(currentChannel?.id || '', messageId);
+    } catch (error) {
+      console.error('Failed to pin message:', error);
+    }
   };
 
-  const handleDownvote = (messageId: string) => {
-    // Downvote logic
-    console.log('Downvote message:', messageId);
+  const handleCreatePoll = async () => {
+    if (!currentChannel || pollOptions.filter(o => o.trim()).length < 2) return;
+    
+    try {
+      await channelAPI.createPoll(currentChannel.id, {
+        question: messageInput,
+        options: pollOptions.filter(o => o.trim())
+      });
+      setMessageInput('');
+      setPollOptions(['', '']);
+      setShowPoll(false);
+    } catch (error) {
+      console.error('Failed to create poll:', error);
+    }
   };
 
-  const handleReply = (message: Message) => {
-    setReplyingTo(message);
-  };
-
-  const handleStartThread = (messageId: string) => {
-    // Thread logic
-    console.log('Start thread for:', messageId);
-  };
-
+  const channelMessages = messages[currentChannel?.id || ''] || [];
   const filteredMessages = searchQuery
-    ? channelMessages.filter(m => 
-        m.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        m.author?.displayName?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+    ? channelMessages.filter(m => m.content.toLowerCase().includes(searchQuery.toLowerCase()))
     : channelMessages;
 
   if (!currentChannel) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-[#313338]">
+      <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="text-center">
-          <HashtagIcon className="w-16 h-16 mx-auto mb-4 text-[#4e5058]" />
-          <p className="text-[#b5bac1] text-sm font-medium">Select a channel to start chatting</p>
-          <div className="mt-6 p-4 bg-[#2b2d31] rounded-lg max-w-sm">
-            <p className="text-xs text-[#949ba4] mb-2">💡 Keyboard Shortcuts</p>
-            <div className="space-y-1 text-xs text-[#b5bac1]">
-              <div className="flex justify-between">
-                <span>Quick Search</span>
-                <kbd className="px-2 py-0.5 bg-[#1e1f22] rounded">Ctrl+K</kbd>
-              </div>
-              <div className="flex justify-between">
-                <span>Pinned Messages</span>
-                <kbd className="px-2 py-0.5 bg-[#1e1f22] rounded">Ctrl+P</kbd>
-              </div>
-              <div className="flex justify-between">
-                <span>Events Calendar</span>
-                <kbd className="px-2 py-0.5 bg-[#1e1f22] rounded">Ctrl+E</kbd>
-              </div>
-            </div>
-          </div>
+          <SparklesIcon className="w-20 h-20 text-blue-400 mx-auto mb-4 animate-pulse" />
+          <h2 className="text-2xl font-bold text-white mb-2">Welcome to Collabrix</h2>
+          <p className="text-gray-400">Select a channel to start chatting</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-gradient-to-b from-[#2e3035] to-[#313338] relative">
-      {/* Channel Header with gradient */}
-      <div className="h-14 px-4 flex items-center justify-between border-b border-[#26272b]/50 bg-gradient-to-r from-[#2b2d31] to-[#313338] shadow-lg backdrop-blur-sm">
+    <div className="flex-1 flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {/* Header */}
+      <div className="h-14 border-b border-gray-700/50 flex items-center justify-between px-4 bg-gray-800/50 backdrop-blur-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5865f2] to-[#7289da] flex items-center justify-center shadow-lg">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
             <HashtagIcon className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="font-bold text-white text-base">{currentChannel.name}</h2>
-            {currentChannel.topic && (
-              <p className="text-xs text-[#949ba4]">{currentChannel.topic}</p>
+            <h2 className="text-white font-bold">{currentChannel.name}</h2>
+            {currentChannel.description && (
+              <p className="text-xs text-gray-400">{currentChannel.description}</p>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-1">
-          <button 
+        
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowSearch(!showSearch)}
+            className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors text-gray-400 hover:text-white"
+            title="Search (Ctrl+K)"
+          >
+            <MagnifyingGlassIcon className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => setShowPinned(!showPinned)}
+            className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors text-gray-400 hover:text-white"
+            title="Pinned Messages (Ctrl+P)"
+          >
+            <FireIcon className="w-5 h-5" />
+          </button>
+          <button
             onClick={() => setShowEvents(!showEvents)}
-            className={`p-2.5 rounded-xl transition-all ${showEvents ? 'bg-[#5865f2] text-white shadow-lg' : 'text-[#b5bac1] hover:text-white hover:bg-[#404249]'}`}
-            title="Events Calendar (Ctrl+E)"
+            className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors text-gray-400 hover:text-white"
+            title="Events (Ctrl+E)"
           >
             <CalendarIcon className="w-5 h-5" />
           </button>
-          <button 
-            onClick={() => setShowPinned(!showPinned)}
-            className={`p-2.5 rounded-xl transition-all relative ${showPinned ? 'bg-[#5865f2] text-white shadow-lg' : 'text-[#b5bac1] hover:text-white hover:bg-[#404249]'}`}
-            title="Pinned Messages (Ctrl+P)"
+          <button
+            onClick={() => setShowAIAssistant(!showAIAssistant)}
+            className="p-2 hover:bg-gray-700/50 rounded-lg transition-colors text-gray-400 hover:text-white"
+            title="AI Assistant"
           >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
-            </svg>
-            {pinnedMessages.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-[#f23f43] to-[#d32f2f] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg animate-pulse">
-                {pinnedMessages.length}
-              </span>
-            )}
-          </button>
-          <button 
-            onClick={() => setShowSearch(!showSearch)}
-            className={`p-2.5 rounded-xl transition-all ${showSearch ? 'bg-[#5865f2] text-white shadow-lg' : 'text-[#b5bac1] hover:text-white hover:bg-[#404249]'}`}
-            title="Search Messages (Ctrl+K)"
-          >
-            <MagnifyingGlassIcon className="w-5 h-5" />
+            <SparklesIcon className="w-5 h-5" />
           </button>
         </div>
       </div>
 
       {/* Search Bar */}
       {showSearch && (
-        <div className="px-4 py-3 bg-[#2b2d31] border-b border-[#26272b]">
-          <div className="flex items-center gap-2 px-3 py-2 bg-[#1e1f22] rounded">
-            <MagnifyingGlassIcon className="w-4 h-4 text-[#949ba4]" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search messages..."
-              className="flex-1 bg-transparent text-white text-sm placeholder-[#6d6f78] focus:outline-none"
-              autoFocus
-            />
-            {searchQuery && (
-              <button onClick={() => setSearchQuery('')} className="text-[#949ba4] hover:text-white">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
-            )}
-          </div>
-          {searchQuery && (
-            <p className="text-xs text-[#949ba4] mt-2">
-              Found {filteredMessages.length} message{filteredMessages.length !== 1 ? 's' : ''}
-            </p>
-          )}
+        <div className="p-4 bg-gray-800/50 border-b border-gray-700/50">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search messages..."
+            className="w-full px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoFocus
+          />
         </div>
       )}
 
-      {/* Pinned Messages Panel */}
-      {showPinned && (
-        <div className="px-4 py-3 bg-[#2b2d31] border-b border-[#26272b]">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
-              </svg>
-              Pinned Messages ({pinnedMessages.length})
-            </h3>
-            <button onClick={() => setShowPinned(false)} className="text-[#949ba4] hover:text-white">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </button>
-          </div>
-          {pinnedMessages.length === 0 ? (
-            <p className="text-sm text-[#949ba4]">No pinned messages yet</p>
-          ) : (
-            <div className="space-y-2 max-h-40 overflow-y-auto">
-              {pinnedMessages.map((msg) => (
-                <div key={msg.id} className="flex items-start gap-2 p-2 bg-[#1e1f22] rounded hover:bg-[#26272b] transition">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs text-[#949ba4]">{msg.author?.displayName}</p>
-                    <p className="text-sm text-white truncate">{msg.content}</p>
-                  </div>
-                  <button
-                    onClick={() => handleUnpinMessage(msg.id)}
-                    className="text-[#949ba4] hover:text-[#f23f43] transition"
-                    title="Unpin"
-                  >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Events Calendar Panel */}
-      {showEvents && (
-        <div className="px-4 py-3 bg-[#2b2d31] border-b border-[#26272b]">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-              <CalendarIcon className="w-4 h-4" />
-              Upcoming Events
-            </h3>
-            <button onClick={() => setShowEvents(false)} className="text-[#949ba4] hover:text-white">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </button>
-          </div>
-          <div className="space-y-2">
-            <div className="p-3 bg-[#1e1f22] rounded">
-              <div className="flex items-start gap-3">
-                <div className="w-12 h-12 bg-[#5865f2] rounded flex flex-col items-center justify-center flex-shrink-0">
-                  <span className="text-xs text-white/70">FEB</span>
-                  <span className="text-lg font-bold text-white">23</span>
-                </div>
-                <div className="flex-1">
-                  <h4 className="text-sm font-semibold text-white mb-1">Game Night</h4>
-                  <p className="text-xs text-[#949ba4]">Tomorrow at 8:00 PM</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <button className="px-3 py-1 bg-[#23a559] text-white text-xs rounded hover:bg-[#1e8e4f] transition">
-                      Interested
-                    </button>
-                    <span className="text-xs text-[#949ba4]">12 going</span>
-                  </div>
-                </div>
+      {/* AI Assistant Panel */}
+      {showAIAssistant && (
+        <div className="p-4 bg-gradient-to-r from-blue-900/30 to-purple-900/30 border-b border-blue-500/30">
+          <div className="flex items-start gap-3">
+            <SparklesIcon className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+            <div className="flex-1">
+              <h3 className="text-white font-semibold mb-2">AI Assistant</h3>
+              <p className="text-sm text-gray-300 mb-3">Ask me anything about this conversation or get suggestions!</p>
+              <div className="flex gap-2">
+                <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm text-white transition-colors">
+                  Summarize Chat
+                </button>
+                <button className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm text-white transition-colors">
+                  Suggest Reply
+                </button>
+                <button className="px-3 py-1.5 bg-pink-600 hover:bg-pink-700 rounded-lg text-sm text-white transition-colors">
+                  Translate
+                </button>
               </div>
             </div>
-            <button className="w-full py-2 text-sm text-[#00a8fc] hover:underline">
-              + Create Event
-            </button>
           </div>
         </div>
       )}
 
-      {/* Messages Area with custom scrollbar */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 custom-scrollbar">
-        {filteredMessages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full">
-            {searchQuery ? (
-              <>
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#5865f2]/20 to-[#7289da]/20 flex items-center justify-center mb-4">
-                  <MagnifyingGlassIcon className="w-10 h-10 text-[#5865f2]" />
-                </div>
-                <p className="text-[#b5bac1] text-base font-medium">No messages found for "{searchQuery}"</p>
-                <p className="text-[#949ba4] text-sm mt-2">Try different keywords</p>
-              </>
-            ) : (
-              <>
-                <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-[#5865f2] to-[#7289da] flex items-center justify-center mb-6 shadow-2xl animate-pulse">
-                  <HashtagIcon className="w-12 h-12 text-white" />
-                </div>
-                <h3 className="text-white font-bold text-3xl mb-3">Welcome to #{currentChannel.name}!</h3>
-                <p className="text-[#b5bac1] text-base">This is the start of the #{currentChannel.name} channel.</p>
-                <p className="text-[#949ba4] text-sm mt-2">Be the first to send a message!</p>
-              </>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {filteredMessages.map((message, index) => {
-              const prevMessage = index > 0 ? filteredMessages[index - 1] : null;
-              const showHeader = !prevMessage || 
-                prevMessage.author?.id !== message.author?.id ||
-                new Date(message.createdAt).getTime() - new Date(prevMessage.createdAt).getTime() > 300000;
-
-              const isPinned = pinnedMessages.some(p => p.id === message.id);
-
-              return (
-                <div key={message.id} className={`group hover:bg-[#2e3035]/50 px-4 py-2 -mx-4 relative rounded-lg transition-all ${showHeader ? 'mt-4' : ''}`}>
-                  {showHeader ? (
-                    <div className="flex gap-4">
-                      <div className="relative flex-shrink-0">
-                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#5865f2] to-[#7289da] flex items-center justify-center text-white font-bold shadow-lg text-sm">
-                          {message.author?.avatar ? (
-                            <img src={message.author.avatar} alt="" className="w-full h-full rounded-xl" />
-                          ) : (
-                            message.author?.username?.substring(0, 2).toUpperCase() || '??'
-                          )}
-                        </div>
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#23a559] rounded-full border-2 border-[#313338]" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3 mb-1">
-                          <span className="font-bold text-white text-base hover:underline cursor-pointer">
-                            {message.author?.displayName || 'Unknown'}
-                          </span>
-                          <span className="px-2 py-0.5 bg-[#5865f2]/20 text-[#5865f2] text-xs rounded-md font-medium">
-                            Member
-                          </span>
-                          <span className="text-xs text-[#949ba4]">
-                            {format(new Date(message.createdAt), 'MMM d, yyyy h:mm a')}
-                          </span>
-                          {isPinned && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#f23f43]/20 text-[#f23f43] text-xs rounded-md font-medium">
-                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
-                              </svg>
-                              Pinned
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[#dbdee1] text-base leading-relaxed break-words">{message.content}</p>
-                      </div>
-                      <div className="opacity-0 group-hover:opacity-100 transition flex items-center gap-1">
-                        {/* Upvote/Downvote (Reddit style) */}
-                        <div className="flex items-center gap-0.5 bg-[#2b2d31] rounded px-1">
-                          <button
-                            onClick={() => handleUpvote(message.id)}
-                            className="p-1 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-[#23a559] transition"
-                            title="Upvote"
-                          >
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
-                            </svg>
-                          </button>
-                          <span className="text-xs text-[#b5bac1] font-medium min-w-[20px] text-center">
-                            {(message.upvotes || 0) - (message.downvotes || 0)}
-                          </span>
-                          <button
-                            onClick={() => handleDownvote(message.id)}
-                            className="p-1 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-[#f23f43] transition"
-                            title="Downvote"
-                          >
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                            </svg>
-                          </button>
-                        </div>
-                        
-                        {/* Quick Reactions (Discord style) */}
-                        <div className="relative">
-                          <button
-                            onClick={() => setShowReactions(showReactions === message.id ? null : message.id)}
-                            className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition"
-                            title="Add reaction"
-                          >
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clipRule="evenodd" />
-                            </svg>
-                          </button>
-                          {showReactions === message.id && (
-                            <div className="absolute bottom-full mb-2 left-0 bg-[#2b2d31] rounded-lg shadow-xl p-2 flex gap-1 z-10 border border-[#404249]">
-                              {quickReactions.map(emoji => (
-                                <button
-                                  key={emoji}
-                                  onClick={() => handleReaction(message.id, emoji)}
-                                  className="w-8 h-8 hover:bg-[#404249] rounded flex items-center justify-center text-lg transition transform hover:scale-125"
-                                >
-                                  {emoji}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Thread (Slack style) */}
-                        <button
-                          onClick={() => handleStartThread(message.id)}
-                          className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition"
-                          title="Start thread"
-                        >
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
-                            <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
-                          </svg>
-                        </button>
-
-                        {/* Reply */}
-                        <button
-                          onClick={() => handleReply(message)}
-                          className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition"
-                          title="Reply"
-                        >
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        </button>
-
-                        {/* Pin */}
-                        <button
-                          onClick={() => isPinned ? handleUnpinMessage(message.id) : handlePinMessage(message.id)}
-                          className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition"
-                          title={isPinned ? "Unpin" : "Pin message"}
-                        >
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
-                          </svg>
-                        </button>
-
-                        {/* More */}
-                        <button className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition" title="More">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex gap-4">
-                      <div className="w-10 flex-shrink-0 flex items-center justify-center">
-                        <span className="text-xs text-[#949ba4] opacity-0 group-hover:opacity-100 transition">
-                          {format(new Date(message.createdAt), 'h:mm a')}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[#dbdee1] text-base leading-relaxed break-words whitespace-pre-wrap">{message.content}</p>
-                        
-                        {/* Reactions Display - Compact */}
-                        {message.reactions && message.reactions.length > 0 && (
-                          <div className="flex flex-wrap gap-1.5 mt-2">
-                            {message.reactions.map((reaction, idx) => (
-                              <button
-                                key={idx}
-                                onClick={() => handleReaction(message.id, reaction.emoji)}
-                                className="flex items-center gap-1 px-2 py-0.5 bg-[#2b2d31] hover:bg-[#404249] rounded-full text-xs transition-all transform hover:scale-105"
-                              >
-                                <span>{reaction.emoji}</span>
-                                <span className="text-[#b5bac1]">{reaction.count}</span>
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      <div className="opacity-0 group-hover:opacity-100 transition flex items-center gap-1">
-                        <button
-                          onClick={() => isPinned ? handleUnpinMessage(message.id) : handlePinMessage(message.id)}
-                          className="p-1.5 hover:bg-[#404249] rounded text-[#b5bac1] hover:text-white transition"
-                          title={isPinned ? "Unpin" : "Pin message"}
-                        >
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-            <div ref={messagesEndRef} />
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {filteredMessages.map((message) => (
+          <div
+            key={message.id}
+            className={`group flex gap-3 hover:bg-gray-800/30 p-3 rounded-xl transition-all ${
+              message.isImportant ? 'bg-yellow-900/20 border-l-4 border-yellow-500' : ''
+            }`}
+          >
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold flex-shrink-0">
+              {message.author.displayName[0]}
+            </div>
             
-            {/* Typing Indicator */}
-            {typingUsers[currentChannel?.id || ''] && typingUsers[currentChannel?.id || ''].length > 0 && (
-              <div className="flex items-center gap-3 px-4 py-2 animate-slide-in">
-                <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-[#5865f2] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <div className="w-2 h-2 bg-[#5865f2] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <div className="w-2 h-2 bg-[#5865f2] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                </div>
-                <span className="text-sm text-[#949ba4]">
-                  {typingUsers[currentChannel?.id || ''].length === 1 
-                    ? 'Someone is typing...'
-                    : `${typingUsers[currentChannel?.id || ''].length} people are typing...`}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-semibold text-white">{message.author.displayName}</span>
+                {message.mood && message.mood !== 'neutral' && (
+                  <span className="text-lg" title={`Mood: ${message.mood}`}>
+                    {moodEmojis[message.mood]}
+                  </span>
+                )}
+                {message.isImportant && (
+                  <BoltIcon className="w-4 h-4 text-yellow-500" title="Important" />
+                )}
+                <span className="text-xs text-gray-500">
+                  {format(new Date(message.createdAt), 'HH:mm')}
                 </span>
+                {message.edited && (
+                  <span className="text-xs text-gray-500">(edited)</span>
+                )}
               </div>
-            )}
+              
+              {message.replyTo && (
+                <div className="mb-2 pl-3 border-l-2 border-gray-600 text-sm text-gray-400">
+                  <span className="font-semibold">{message.replyTo.author.displayName}</span>: {message.replyTo.content.substring(0, 50)}...
+                </div>
+              )}
+              
+              <p className="text-gray-200 break-words">{message.content}</p>
+              
+              {/* Reactions */}
+              {message.reactions && message.reactions.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {message.reactions.map((reaction, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleReaction(message.id, reaction.emoji)}
+                      className="px-2 py-1 bg-gray-700/50 hover:bg-gray-700 rounded-full text-sm flex items-center gap-1 transition-colors"
+                    >
+                      <span>{reaction.emoji}</span>
+                      <span className="text-gray-300">{reaction.count}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              
+              {/* Message Actions */}
+              <div className="flex items-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={() => setReplyingTo(message)}
+                  className="p-1.5 hover:bg-gray-700 rounded text-gray-400 hover:text-white transition-colors"
+                  title="Reply"
+                >
+                  <ChatBubbleLeftRightIcon className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setShowReactions(message.id)}
+                  className="p-1.5 hover:bg-gray-700 rounded text-gray-400 hover:text-white transition-colors"
+                  title="Add Reaction"
+                >
+                  <FaceSmileIcon className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleUpvote(message.id)}
+                  className="p-1.5 hover:bg-gray-700 rounded text-gray-400 hover:text-green-400 transition-colors"
+                  title="Upvote"
+                >
+                  👍 {message.upvotes || 0}
+                </button>
+                <button
+                  onClick={() => handleDownvote(message.id)}
+                  className="p-1.5 hover:bg-gray-700 rounded text-gray-400 hover:text-red-400 transition-colors"
+                  title="Downvote"
+                >
+                  👎 {message.downvotes || 0}
+                </button>
+                <button
+                  onClick={() => handlePinMessage(message.id)}
+                  className="p-1.5 hover:bg-gray-700 rounded text-gray-400 hover:text-yellow-400 transition-colors"
+                  title="Pin Message"
+                >
+                  📌
+                </button>
+              </div>
+              
+              {/* Quick Reactions Popup */}
+              {showReactions === message.id && (
+                <div className="flex gap-1 mt-2 p-2 bg-gray-700 rounded-lg">
+                  {quickReactions.map((emoji) => (
+                    <button
+                      key={emoji}
+                      onClick={() => {
+                        handleReaction(message.id, emoji);
+                        setShowReactions(null);
+                      }}
+                      className="p-2 hover:bg-gray-600 rounded transition-colors text-xl"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        )}
+        ))}
+        <div ref={messagesEndRef} />
       </div>
 
-      {/* Message Input with modern design */}
-      <div className="px-4 pb-6 pt-3 bg-gradient-to-t from-[#2b2d31] to-transparent">
-        {/* Reply indicator */}
-        {replyingTo && (
-          <div className="mb-3 px-4 py-3 bg-gradient-to-r from-[#5865f2]/10 to-[#7289da]/10 rounded-xl flex items-center justify-between border-l-4 border-[#5865f2]">
-            <div className="flex items-center gap-3 text-sm">
-              <svg className="w-5 h-5 text-[#5865f2]" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              <div>
-                <span className="text-[#949ba4] text-xs">Replying to</span>
-                <span className="text-white font-semibold ml-2">{replyingTo.author.displayName}</span>
-                <p className="text-[#b5bac1] text-sm truncate max-w-md mt-0.5">"{replyingTo.content}"</p>
-              </div>
-            </div>
+      {/* Typing Indicator */}
+      {typingUsers[currentChannel.id]?.length > 0 && (
+        <div className="px-4 py-2 text-sm text-gray-400">
+          {typingUsers[currentChannel.id].join(', ')} {typingUsers[currentChannel.id].length === 1 ? 'is' : 'are'} typing...
+        </div>
+      )}
+
+      {/* Reply Preview */}
+      {replyingTo && (
+        <div className="px-4 py-2 bg-gray-800/50 border-t border-gray-700/50 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-gray-400">Replying to</span>
+            <span className="text-white font-semibold">{replyingTo.author.displayName}</span>
+            <span className="text-gray-400">{replyingTo.content.substring(0, 50)}...</span>
+          </div>
+          <button
+            onClick={() => setReplyingTo(null)}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* Poll Creator */}
+      {showPoll && (
+        <div className="px-4 py-3 bg-gray-800/50 border-t border-gray-700/50">
+          <h3 className="text-white font-semibold mb-2">Create Poll</h3>
+          <input
+            type="text"
+            value={messageInput}
+            onChange={(e) => setMessageInput(e.target.value)}
+            placeholder="Poll question..."
+            className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+          />
+          {pollOptions.map((option, idx) => (
+            <input
+              key={idx}
+              type="text"
+              value={option}
+              onChange={(e) => {
+                const newOptions = [...pollOptions];
+                newOptions[idx] = e.target.value;
+                setPollOptions(newOptions);
+              }}
+              placeholder={`Option ${idx + 1}`}
+              className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+            />
+          ))}
+          <div className="flex gap-2">
             <button
-              onClick={() => setReplyingTo(null)}
-              className="text-[#b5bac1] hover:text-white transition p-1 hover:bg-[#404249] rounded-lg"
+              onClick={() => setPollOptions([...pollOptions, ''])}
+              className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm text-white transition-colors"
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
+              Add Option
+            </button>
+            <button
+              onClick={handleCreatePoll}
+              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm text-white transition-colors"
+            >
+              Create Poll
+            </button>
+            <button
+              onClick={() => setShowPoll(false)}
+              className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm text-white transition-colors"
+            >
+              Cancel
             </button>
           </div>
-        )}
-        <form onSubmit={handleSendMessage} className="relative">
-          <div className={`flex items-center gap-3 px-5 py-4 bg-[#383a40] ${replyingTo ? 'rounded-xl' : 'rounded-2xl'} hover:bg-[#40444b] transition-all shadow-lg border border-[#404249]/50`}>
+        </div>
+      )}
+
+      {/* Message Input */}
+      <div className="p-4 bg-gray-800/50 border-t border-gray-700/50">
+        <form onSubmit={handleSendMessage} className="flex flex-col gap-2">
+          {/* Mood & Important Toggles */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-400">Mood:</span>
+            {Object.entries(moodEmojis).map(([mood, emoji]) => (
+              <button
+                key={mood}
+                type="button"
+                onClick={() => setMessageMood(mood as any)}
+                className={`p-1.5 rounded-lg transition-colors ${
+                  messageMood === mood ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
+                }`}
+                title={mood}
+              >
+                {emoji}
+              </button>
+            ))}
             <button
               type="button"
-              className="text-[#b5bac1] hover:text-white transition flex-shrink-0"
-              title="Add attachment"
+              onClick={() => setIsImportant(!isImportant)}
+              className={`ml-auto p-1.5 rounded-lg transition-colors ${
+                isImportant ? 'bg-yellow-600' : 'bg-gray-700 hover:bg-gray-600'
+              }`}
+              title="Mark as Important (Ctrl+I)"
             >
-              <PlusIcon className="w-6 h-6" />
+              <BoltIcon className="w-4 h-4 text-white" />
             </button>
+          </div>
+          
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-gray-300"
+              title="Add Attachment"
+            >
+              <PlusIcon className="w-5 h-5" />
+            </button>
+            
             <input
               type="text"
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage(e);
-                }
-              }}
               placeholder={`Message #${currentChannel.name}`}
-              className="flex-1 bg-transparent text-white text-base placeholder-[#6d6f78] focus:outline-none resize-none"
-              style={{ minHeight: '24px', maxHeight: '200px' }}
+              className="flex-1 px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <button
-                type="button"
-                className="text-[#b5bac1] hover:text-white transition p-1.5 hover:bg-[#404249] rounded-lg"
-                title="Add GIF"
-              >
-                <GifIcon className="w-6 h-6" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                className="text-[#b5bac1] hover:text-white transition p-1.5 hover:bg-[#404249] rounded-lg relative"
-                title="Add emoji"
-              >
-                <FaceSmileIcon className="w-6 h-6" />
-                {showEmojiPicker && (
-                  <div className="absolute bottom-full right-0 mb-2 bg-[#2b2d31] rounded-xl shadow-2xl p-3 border border-[#404249] z-50">
-                    <div className="grid grid-cols-8 gap-2">
-                      {quickReactions.map(emoji => (
-                        <button
-                          key={emoji}
-                          onClick={() => {
-                            setMessageInput(messageInput + emoji);
-                            setShowEmojiPicker(false);
-                          }}
-                          className="w-10 h-10 hover:bg-[#404249] rounded-lg flex items-center justify-center text-2xl transition transform hover:scale-125"
-                        >
-                          {emoji}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </button>
-              {messageInput.trim() && (
-                <button
-                  type="submit"
-                  className="ml-2 p-3 bg-gradient-to-br from-[#5865f2] to-[#7289da] text-white rounded-xl hover:from-[#4752c4] hover:to-[#5865f2] transition-all transform hover:scale-105 shadow-lg hover:shadow-[#5865f2]/50"
-                  title="Send message (Enter)"
-                >
-                  <PaperAirplaneIcon className="w-5 h-5" />
-                </button>
-              )}
-            </div>
+            
+            <button
+              type="button"
+              onClick={() => setShowPoll(!showPoll)}
+              className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-gray-300"
+              title="Create Poll"
+            >
+              📊
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors text-gray-300"
+              title="Emoji"
+            >
+              <FaceSmileIcon className="w-5 h-5" />
+            </button>
+            
+            <button
+              type="submit"
+              disabled={!messageInput.trim()}
+              className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-all text-white"
+            >
+              <PaperAirplaneIcon className="w-5 h-5" />
+            </button>
           </div>
         </form>
       </div>
