@@ -24,7 +24,9 @@ export default function Download() {
 
   const startDownload = () => {
     setDownloadStarted(true);
-    window.location.href = 'https://github.com/JuusoJuusto/Collabrix/releases/latest/download/Collabrix-Setup-2.0.3.exe';
+    // Direct download link - host the EXE file on Vercel, Firebase Storage, or similar
+    // For now using GitHub raw content as direct download
+    window.location.href = 'https://github.com/JuusoJuusto/Collabrix/releases/download/v2.1.0/Collabrix-Setup-2.1.0.exe';
   };
 
   return (
@@ -57,7 +59,7 @@ export default function Download() {
                 Download Started!
               </h2>
               <p className="text-gray-600 mb-6">
-                Check your downloads folder for Collabrix-Setup-2.0.3.exe
+                Check your downloads folder for Collabrix-Setup-2.1.0.exe
               </p>
               <button
                 onClick={startDownload}
@@ -79,7 +81,7 @@ export default function Download() {
               </div>
               <div>
                 <h4 className="font-semibold text-gray-900">Run the installer</h4>
-                <p className="text-sm text-gray-600">Double-click Collabrix-Setup-2.0.3.exe</p>
+                <p className="text-sm text-gray-600">Double-click Collabrix-Setup-2.1.0.exe</p>
               </div>
             </div>
             <div className="flex gap-4">
