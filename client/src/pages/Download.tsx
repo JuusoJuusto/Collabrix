@@ -24,8 +24,13 @@ export default function Download() {
 
   const startDownload = () => {
     setDownloadStarted(true);
-    // Direct download from GitHub releases
-    window.location.href = 'https://github.com/JuusoJuusto/Collabrix/releases/download/v1.0.0/Collabrix-Setup-2.1.0.exe';
+    // Direct download - create a temporary link and click it
+    const link = document.createElement('a');
+    link.href = 'https://github.com/JuusoJuusto/Collabrix/releases/download/v2.1.0/Collabrix-Setup-2.1.0.exe';
+    link.download = 'Collabrix-Setup-2.1.0.exe';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
