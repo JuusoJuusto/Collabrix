@@ -24,15 +24,27 @@ export default function Download() {
 
   const startDownload = () => {
     setDownloadStarted(true);
-    // Direct download from GitHub release v.1.0.0
-    const downloadUrl = 'https://github.com/JuusoJuusto/Collabrix/releases/download/v.1.0.0/Collabrix-Setup-2.1.0.exe';
+    // Try multiple possible filenames from v.1.0.0 release
+    const possibleUrls = [
+      'https://github.com/JuusoJuusto/Collabrix/releases/download/v.1.0.0/Collabrix-Setup-2.1.0.exe',
+      'https://github.com/JuusoJuusto/Collabrix/releases/download/v.1.0.0/Collabrix-Setup-1.0.0.exe',
+      'https://github.com/JuusoJuusto/Collabrix/releases/download/v.1.0.0/Collabrix-Setup.exe'
+    ];
     
+    // Try first URL, if it fails user can manually download from releases page
     const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = 'Collabrix-Setup-2.1.0.exe';
+    link.href = possibleUrls[0];
+    link.download = 'Collabrix-Setup.exe';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    
+    // Fallback: redirect to releases page after 2 seconds if download doesn't start
+    setTimeout(() => {
+      if (!downloadStarted) {
+        window.location.href = 'https://github.com/JuusoJuusto/Collabrix/releases/tag/v.1.0.0';
+      }
+    }, 2000);
   };
 
   return (
