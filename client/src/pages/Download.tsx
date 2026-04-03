@@ -24,9 +24,8 @@ export default function Download() {
 
   const startDownload = () => {
     setDownloadStarted(true);
-    // Direct download - GitHub releases must be public for direct download
-    // If private, user will be redirected to GitHub to authenticate
-    const downloadUrl = 'https://github.com/JuusoJuusto/Collabrix/releases/latest/download/Collabrix-Setup-2.1.0.exe';
+    // Direct download from GitHub release v.1.0.0
+    const downloadUrl = 'https://github.com/JuusoJuusto/Collabrix/releases/download/v.1.0.0/Collabrix-Setup-2.1.0.exe';
     
     const link = document.createElement('a');
     link.href = downloadUrl;
