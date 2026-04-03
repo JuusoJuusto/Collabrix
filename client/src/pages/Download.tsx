@@ -24,27 +24,8 @@ export default function Download() {
 
   const startDownload = () => {
     setDownloadStarted(true);
-    // Try multiple possible filenames from v.1.0.0 release
-    const possibleUrls = [
-      'https://github.com/JuusoJuusto/Collabrix/releases/download/v.1.0.0/Collabrix-Setup-2.1.0.exe',
-      'https://github.com/JuusoJuusto/Collabrix/releases/download/v.1.0.0/Collabrix-Setup-1.0.0.exe',
-      'https://github.com/JuusoJuusto/Collabrix/releases/download/v.1.0.0/Collabrix-Setup.exe'
-    ];
-    
-    // Try first URL, if it fails user can manually download from releases page
-    const link = document.createElement('a');
-    link.href = possibleUrls[0];
-    link.download = 'Collabrix-Setup.exe';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Fallback: redirect to releases page after 2 seconds if download doesn't start
-    setTimeout(() => {
-      if (!downloadStarted) {
-        window.location.href = 'https://github.com/JuusoJuusto/Collabrix/releases/tag/v.1.0.0';
-      }
-    }, 2000);
+    // Redirect to GitHub releases page where user can download
+    window.location.href = 'https://github.com/JuusoJuusto/Collabrix/releases/tag/v.1.0.0';
   };
 
   return (
@@ -80,10 +61,10 @@ export default function Download() {
               <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-3xl p-12 shadow-2xl">
                 <div className="text-8xl mb-6 animate-bounce">⏳</div>
                 <h2 className="text-4xl font-bold text-white mb-4">
-                  Starting download in {countdown}...
+                  Redirecting in {countdown}...
                 </h2>
                 <p className="text-xl text-slate-300">
-                  Your download will begin automatically
+                  Taking you to the download page
                 </p>
                 <div className="mt-8 flex items-center justify-center gap-3 text-slate-400">
                   <div className="w-3 h-3 bg-indigo-500 rounded-full animate-pulse"></div>
@@ -95,16 +76,16 @@ export default function Download() {
               <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm border border-green-500/50 rounded-3xl p-12 shadow-2xl shadow-green-500/20">
                 <div className="text-8xl mb-6">✅</div>
                 <h2 className="text-4xl font-bold text-white mb-4">
-                  Download Started!
+                  Opening Download Page!
                 </h2>
                 <p className="text-xl text-slate-300 mb-8">
-                  Check your downloads folder for Collabrix-Setup-2.1.0.exe
+                  Click the download button on the GitHub releases page to get Collabrix
                 </p>
                 <button
                   onClick={startDownload}
                   className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all font-semibold text-lg transform hover:scale-105 hover:-translate-y-1 shadow-xl shadow-indigo-500/50"
                 >
-                  Download Again
+                  Open Download Page Again
                 </button>
               </div>
             )}
