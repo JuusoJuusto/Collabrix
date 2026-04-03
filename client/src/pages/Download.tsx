@@ -24,13 +24,26 @@ export default function Download() {
 
   const startDownload = () => {
     setDownloadStarted(true);
-    // Direct download - create a temporary link and click it
-    const link = document.createElement('a');
-    link.href = 'https://github.com/JuusoJuusto/Collabrix/releases/download/v2.1.0/Collabrix-Setup-2.1.0.exe';
-    link.download = 'Collabrix-Setup-2.1.0.exe';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Direct download using fetch and blob
+    const downloadUrl = 'https://github.com/JuusoJuusto/Collabrix/releases/download/v2.1.0/Collabrix-Setup-2.1.0.exe';
+    
+    fetch(downloadUrl)
+      .then(response => response.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'Collabrix-Setup-2.1.0.exe';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(err => {
+        console.error('Download failed:', err);
+        // Fallback to direct link
+        window.location.href = downloadUrl;
+      });
   };
 
   return (
